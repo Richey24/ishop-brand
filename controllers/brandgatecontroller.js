@@ -67,12 +67,12 @@ const feedProduct = async () => {
                     images: JSON.stringify(product.images.map((image) => image.src)),
                     dimension: product.dimensions.width + product.dimensions.height + product.dimensions.length,
                     standard_price: product.variations[0].regular_price.toString(),
-                    company_id: 139,
+                    company_id: 226,
                     variants: JSON.stringify(product.variations),
                 };
                 const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
                     "name": product.name,
-                    "company_id": 139
+                    "company_id": 226
                 })
                 if (check.data.products?.length === 0) {
                     const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
