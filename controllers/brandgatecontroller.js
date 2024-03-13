@@ -10,14 +10,15 @@ const feedCategory = async (category, token) => {
         }
     })
     const cat = response.data
-    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/64e7f7c571179976adeea75d`, {
+    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/65efbcf32f64e5621d536c68`, {
         name: cat.name
     })
     const result = checkCat.data
     if (result.category) {
         theCat = result.category.id
     } else {
-        const getCatID = await axios.post(`https://https://market-server.azurewebsites.net/api/categories`, {
+        console.log("creating category");
+        const getCatID = await axios.post(`https://market-server.azurewebsites.net/api/categories`, {
             name: cat.name
         }, {
             headers: {
@@ -39,8 +40,8 @@ const feedProduct = async () => {
     try {
         for (let i = 1; i < 101; i++) {
             const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
-                email: "uahomorejoice@gmail.com",
-                password: "Rejoice11#",
+                email: "theblackmarket@gmail.com",
+                password: "@Theblackmarket",
                 status: "active"
             })
             const user = getUser.data
@@ -100,8 +101,8 @@ const feedProduct = async () => {
 
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
-        feedProduct()
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        feedProduct()
     })
 }
 
