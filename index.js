@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 5000;
 const morgan = require("morgan");
 const cors = require("cors");
 const { runFeedProductDaily } = require("./controllers/brandgatecontroller");
+const brandgaterouter = require("./routes/brandgaterouter");
 const app = express();
 
 
@@ -17,6 +18,8 @@ app.get("/", (req, res) => {
     console.log("Hello MEVN Soldier");
     res.status(201).json({ message: "working" });
 });
+
+app.use("/api/brandgate", brandgaterouter)
 
 
 app.listen(PORT, () => {

@@ -60,16 +60,18 @@ const feedProduct = async () => {
                     category_id: categories.toString(),
                     uom_name: "1",
                     published: "true",
-                    list_price: product.variations[0].sale_price.toString(),
+                    list_price: product.variations[0]?.sale_price?.toString(),
                     description: product.description,
                     qty: qty,
                     weight: product.weight,
                     size: "",
                     images: JSON.stringify(product.images.map((image) => image.src)),
-                    dimension: product.dimensions.width + product.dimensions.height + product.dimensions.length,
-                    standard_price: product.variations[0].regular_price.toString(),
+                    dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
+                    standard_price: product.variations[0]?.regular_price?.toString(),
                     company_id: 226,
                     variants: JSON.stringify(product.variations),
+                    brand_gate_id: product.id,
+                    brand_gate_variant_id: product.variations[0]?.id
                 };
                 const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
                     "name": product.name,
@@ -100,12 +102,31 @@ const feedProduct = async () => {
 }
 
 const runFeedProductDaily = () => {
+    feedProduct()
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
 }
 
+const createOrder = async (req, res) => {
+    try {
+        if (!req.body) {
+            return res.status(400).json({ message: "send order body" })
+        }
+        await axios.post("https://nova.shopwoo.com/api/v1/orders?store_id=2", req.body, {
+            auth: {
+                username: "info@dreamtechlabs.net",
+                password: "Aim4$ucce$$"
+            }
+        })
+        res.status(200).json({ message: "order created on brandgateway" })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error })
+    }
+}
+
 module.exports = {
-    runFeedProductDaily
+    runFeedProductDaily,
+    createOrder
 }
