@@ -87,9 +87,13 @@ class PrintifyController {
                 qty: product.variants[0]?.quantity,
                 weight: product.variants[0]?.gram,
                 images: JSON.stringify(product.images.map((image) => image.src)),
-                // dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
                 standard_price: product.variants[0]?.price?.toString(),
                 company_id: 139,
+                x_printify_id: product.id,
+                x_printify_blueprint_id: product.blueprint_id,
+                x_printify_provider_id: product.print_provider_id,
+                x_printify_variant_id: product.variants[0]?.id,
+                x_printify_print_areas: JSON.stringify(product.print_areas),
                 variants: JSON.stringify(product.variants),
             };
             const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
@@ -170,8 +174,8 @@ const printifyCon = new PrintifyController
 
 const runPrintifyDaily = () => {
     cron.schedule("0 18 * * *", () => {
-        printifyCon.fetchProductByShop()
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop()
     })
 }
 
