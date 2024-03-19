@@ -86,7 +86,7 @@ const feedProduct = async () => {
                     const pro = res.data
                     console.log(pro)
                 } else {
-                    if (product.in_stock === false) {
+                    if (product.in_stock === false || product.variations[0]?.in_stock === false) {
                         await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
                     }
                     const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
