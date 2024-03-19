@@ -5,7 +5,7 @@ const PrintifyService = require('../services/PrintifyService')
 
 const feedCategory = async (category, token) => {
     let theCat;
-    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/64e7f7c571179976adeea75d`, {
+    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/65fa0bf718cfd854f818a1a8`, {
         name: category
     })
     const result = checkCat.data
@@ -66,62 +66,66 @@ class PrintifyController {
         // const attr = params.shopId;
         const attr = '13408821';
 
-        // try {
-        const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
-            email: "uahomorejoice@gmail.com",
-            password: "Rejoice11#",
-            status: "active"
-        })
-        const user = getUser.data
-        const products = await this.service.getShopProducts(attr);
-        console.log(products);
-        for (const product of products.data) {
-            const category = await feedCategory(product.tags[0], user.token)
-            const body = {
-                name: product.title,
-                category_id: category.toString(),
-                uom_name: "1",
-                published: "true",
-                list_price: product.variants[0]?.cost?.toString(),
-                description: product.description,
-                qty: product.variants[0]?.quantity,
-                weight: product.variants[0]?.gram,
-                images: JSON.stringify(product.images.map((image) => image.src)),
-                standard_price: product.variants[0]?.price?.toString(),
-                company_id: 139,
-                x_printify_id: product.id,
-                x_printify_blueprint_id: product.blueprint_id,
-                x_printify_provider_id: product.print_provider_id,
-                x_printify_variant_id: product.variants[0]?.id,
-                x_printify_print_areas: JSON.stringify(product.print_areas),
-                variants: JSON.stringify(product.variants),
-            };
-            const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
-                "name": product.name,
-                "company_id": 139
+        try {
+            const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
+                email: "aboveallnations02@gmail.com",
+                password: "@Aboveallnations",
+                status: "active"
             })
-            if (check.data.products?.length === 0) {
-                const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`
-                    }
+            const user = getUser.data
+            const products = await this.service.getShopProducts(attr);
+            console.log(products);
+            for (const product of products.data) {
+                const category = await feedCategory(product.tags[0], user.token)
+                const body = {
+                    name: product.title,
+                    category_id: category.toString(),
+                    uom_name: "1",
+                    published: "true",
+                    list_price: product.variants[0]?.cost?.toString(),
+                    description: product.description,
+                    qty: product.variants[0]?.quantity,
+                    weight: product.variants[0]?.gram,
+                    images: JSON.stringify(product.images.map((image) => image.src)),
+                    standard_price: product.variants[0]?.price?.toString(),
+                    company_id: 285,
+                    x_printify_id: product.id,
+                    x_printify_blueprint_id: product.blueprint_id,
+                    x_printify_provider_id: product.print_provider_id,
+                    x_printify_variant_id: product.variants[0]?.id,
+                    x_printify_print_areas: JSON.stringify(product.print_areas),
+                    variants: JSON.stringify(product.variants),
+                };
+                const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
+                    "name": product.title,
+                    "company_id": 285
                 })
-                const pro = res.data
-                console.log(pro)
-            } else {
-                const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`
+                if (product.variants[0].is_available === false && check.data.products?.length > 0) {
+                    await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
+                    console.log("product deleted");
+                } else {
+                    if (check.data.products?.length === 0) {
+                        const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`
+                            }
+                        })
+                        const pro = res.data
+                        console.log(pro)
+                    } else {
+                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`
+                            }
+                        })
+                        const pro = res.data
+                        console.log(pro)
                     }
-                })
-                const pro = res.data
-                console.log(pro)
+                }
             }
+        } catch (err) {
+            console.log(err);
         }
-        // return res.status(200).json({ status: true, products });
-        // } catch (err) {
-        //     return res.status(500).json({ status: false, err })
-        // }
     }
 
     /**
@@ -173,9 +177,9 @@ class PrintifyController {
 const printifyCon = new PrintifyController
 
 const runPrintifyDaily = () => {
+    printifyCon.fetchProductByShop()
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop()
     })
 }
 

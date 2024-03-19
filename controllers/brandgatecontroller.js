@@ -60,14 +60,14 @@ const feedProduct = async () => {
                     category_id: categories.toString(),
                     uom_name: "1",
                     published: "true",
-                    list_price: product.variations[0]?.sale_price?.toString(),
+                    list_price: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
                     description: product.description,
                     qty: qty,
                     weight: product.weight,
                     size: "",
                     images: JSON.stringify(product.images.map((image) => image.src)),
                     dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
-                    standard_price: product.variations[0]?.regular_price?.toString(),
+                    standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
                     company_id: 226,
                     variants: JSON.stringify(product.variations),
                     brand_gate_id: product.id,
@@ -77,25 +77,27 @@ const feedProduct = async () => {
                     "name": product.name,
                     "company_id": 226
                 })
-                if (check.data.products?.length === 0) {
-                    const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
-                        headers: {
-                            Authorization: `Bearer ${user.token}`
-                        }
-                    })
-                    const pro = res.data
-                    console.log(pro)
+                if ((product.in_stock === false || product.variations[0]?.in_stock === false) && check.data.products?.length > 0) {
+                    await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
+                    console.log("product deleted");
                 } else {
-                    if (product.in_stock === false || product.variations[0]?.in_stock === false) {
-                        await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
+                    if (check.data.products?.length === 0) {
+                        const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`
+                            }
+                        })
+                        const pro = res.data
+                        console.log(pro)
+                    } else {
+                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
+                            headers: {
+                                Authorization: `Bearer ${user.token}`
+                            }
+                        })
+                        const pro = res.data
+                        console.log(pro)
                     }
-                    const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
-                        headers: {
-                            Authorization: `Bearer ${user.token}`
-                        }
-                    })
-                    const pro = res.data
-                    console.log(pro)
                 }
             }
         }
