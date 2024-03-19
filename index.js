@@ -14,8 +14,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev")); // configire morgan
 
-// runFeedProductDaily()
-// runPrintifyDaily()
+runFeedProductDaily()
+runPrintifyDaily()
 
 app.get("/", (req, res) => {
     console.log("Hello MEVN Soldier");
