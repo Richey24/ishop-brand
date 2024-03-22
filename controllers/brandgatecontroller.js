@@ -36,6 +36,27 @@ const stockQty = async (variants) => {
     return qty;
 }
 
+const getVariants = async (variants) => {
+    const res = await Promise.all(variants.map(async (variant) => {
+        const checkVar = await axios("https://market-server.azurewebsites.net/api/products/attribute-values/3")
+        const varia = checkVar.data.values.find((val) => val.name === variant.attributes[0].option)
+        if (varia) {
+            return [{
+                attributeId: 3,
+                price_extra: 0,
+                valueId: varia.id
+            }]
+        } else {
+            return [{
+                attributeId: 3,
+                price_extra: 0,
+                value: variant.attributes[0].option
+            }]
+        }
+    }))
+    return res
+}
+
 const feedProduct = async () => {
     try {
         for (let i = 1; i < 101; i++) {
@@ -55,6 +76,8 @@ const feedProduct = async () => {
             for (const product of products) {
                 const categories = await feedCategory(product.categories[0], user.token)
                 const qty = await stockQty(product.variations)
+                const variations = await getVariants(product.variations)
+                console.log(variations);
                 const body = {
                     name: product.name,
                     category_id: categories.toString(),
@@ -64,12 +87,12 @@ const feedProduct = async () => {
                     description: product.description,
                     qty: qty,
                     weight: product.weight,
-                    size: "",
+                    size: 1,
                     images: JSON.stringify(product.images.map((image) => image.src)),
                     dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
                     standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
                     company_id: 226,
-                    variants: JSON.stringify(product.variations),
+                    variants: JSON.stringify(variations),
                     brand_gate_id: product.id,
                     brand_gate_variant_id: product.variations[0]?.id
                 };
@@ -77,12 +100,12 @@ const feedProduct = async () => {
                     "name": product.name,
                     "company_id": 226
                 })
-                if ((product.in_stock === false || product.variations[0]?.in_stock === false) && check.data.products?.length > 0) {
+                if ((product.in_stock === false || product.variations[0]?.in_stock === false || product.variations.length === 0) && check.data.products?.length > 0) {
                     await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
                     console.log("product deleted");
                 } else {
-                    if (check.data.products?.length === 0) {
-                        const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
+                    if (check.data.products?.length === 0 && product.in_stock !== false && product.variations[0]?.in_stock !== false && product.variations.length > 0) {
+                        const res = await axios.post("https://market-server.azurewebsites.net/api/products/variants", body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
                             }
@@ -107,14 +130,15 @@ const feedProduct = async () => {
 }
 
 const runFeedProductDaily = () => {
+    feedProduct()
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
 }
 
 const createOrder = async (req, res) => {
     try {
+        console.log(req.body);
         if (!req.body) {
             return res.status(400).json({ message: "send order body" })
         }
