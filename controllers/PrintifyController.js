@@ -97,7 +97,7 @@ class PrintifyController {
                     variants: JSON.stringify(product.variants),
                 };
                 const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
-                    "name": product.title,
+                    "x_printify_id": product.id,
                     "company_id": 285
                 })
                 if (product.variants[0].is_available === false && check.data.products?.length > 0) {
