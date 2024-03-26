@@ -3,9 +3,9 @@ const { default: axios } = require('axios');
 const cron = require("node-cron");
 const PrintifyService = require('../services/PrintifyService')
 
-const feedCategory = async (category, token) => {
+const feedCategory = async (category, token, companyLongId) => {
     let theCat;
-    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/65fa0bf718cfd854f818a1a8`, {
+    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/${companyLongId}`, {
         name: category
     })
     const result = checkCat.data
@@ -62,21 +62,20 @@ class PrintifyController {
      * @param {*} res 
      * @returns 
      */
-    fetchProductByShop = async () => {
+    fetchProductByShop = async (shopId, email, password, companyLongId, companyShortId) => {
         // const attr = params.shopId;
-        const attr = '13408821';
 
         try {
             const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
-                email: "aboveallnations02@gmail.com",
-                password: "@Aboveallnations",
+                email: email,
+                password: password,
                 status: "active"
             })
             const user = getUser.data
-            const products = await this.service.getShopProducts(attr);
+            const products = await this.service.getShopProducts(shopId);
             console.log(products);
             for (const product of products.data) {
-                const category = await feedCategory(product.tags[0], user.token)
+                const category = await feedCategory(product.tags[0], user.token, companyLongId)
                 const body = {
                     name: product.title,
                     category_id: category.toString(),
@@ -88,17 +87,17 @@ class PrintifyController {
                     weight: product.variants[0]?.gram,
                     images: JSON.stringify(product.images.map((image) => image.src)),
                     standard_price: product.variants[0]?.price?.toString(),
-                    company_id: 285,
+                    company_id: companyShortId,
                     x_printify_id: product.id,
                     x_printify_blueprint_id: product.blueprint_id,
                     x_printify_provider_id: product.print_provider_id,
                     x_printify_variant_id: product.variants[0]?.id,
                     x_printify_print_areas: JSON.stringify(product.print_areas),
-                    variants: JSON.stringify(product.variants),
+                    // variants: JSON.stringify(product.variants),
                 };
                 const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
                     "x_printify_id": product.id,
-                    "company_id": 285
+                    "company_id": companyShortId
                 })
                 if (product.variants[0].is_available === false && check.data.products?.length > 0) {
                     await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
@@ -111,7 +110,7 @@ class PrintifyController {
                             }
                         })
                         const pro = res.data
-                        console.log(pro)
+                        console.log(pro, companyShortId)
                     } else {
                         const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
                             headers: {
@@ -119,7 +118,7 @@ class PrintifyController {
                             }
                         })
                         const pro = res.data
-                        console.log(pro)
+                        console.log(pro, companyShortId)
                     }
                 }
             }
@@ -179,7 +178,8 @@ const printifyCon = new PrintifyController
 const runPrintifyDaily = () => {
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop()
+        printifyCon.fetchProductByShop("13408821", "aboveallnations02@gmail.com", "@Aboveallnations", "65fa0bf718cfd854f818a1a8", 285)
+        printifyCon.fetchProductByShop("14733834", "thehebrewstore@gmail.com", "@Thehebrewstore", "65fafa76c51e02de041b2f7f", 288)
     })
 }
 
