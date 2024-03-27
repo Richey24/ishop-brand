@@ -74,6 +74,10 @@ const feedProduct = async () => {
             })
             const products = response.data
             for (const product of products) {
+                const variantObj = {}
+                product.variations.map((variant) => {
+                    variantObj[`${variant.attributes[0].option}`] = variant.id
+                })
                 const categories = await feedCategory(product.categories[0], user.token)
                 const qty = await stockQty(product.variations)
                 const variations = await getVariants(product.variations)
@@ -94,7 +98,7 @@ const feedProduct = async () => {
                     company_id: 226,
                     variants: JSON.stringify(variations),
                     brand_gate_id: product.id,
-                    brand_gate_variant_id: product.variations[0]?.id
+                    brand_gate_variant_id: JSON.stringify(variantObj)
                 };
                 const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
                     "name": product.name,
@@ -112,7 +116,7 @@ const feedProduct = async () => {
                         })
                         const pro = res.data
                         console.log(pro)
-                    } else {
+                    } else if (check.data.products?.length > 0) {
                         const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
@@ -130,9 +134,9 @@ const feedProduct = async () => {
 }
 
 const runFeedProductDaily = () => {
+    feedProduct()
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
 }
 

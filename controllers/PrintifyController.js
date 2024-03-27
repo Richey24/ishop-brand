@@ -176,9 +176,9 @@ class PrintifyController {
 const printifyCon = new PrintifyController
 
 const runPrintifyDaily = () => {
-    printifyCon.fetchProductByShop("15033405", "lilysblossom@gmail.com", "@Lilysblossom", "65fa2e797ac9c593c0c32cce", 286)
     cron.schedule("0 6 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15033405", "lilysblossom@gmail.com", "@Lilysblossom", "65fa2e797ac9c593c0c32cce", 286)
     })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
