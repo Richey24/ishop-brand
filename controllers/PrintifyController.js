@@ -5,7 +5,7 @@ const PrintifyService = require('../services/PrintifyService')
 
 const feedCategory = async (category, token, companyLongId) => {
     let theCat;
-    const checkCat = await axios.post(`http://localhost:4000/api/categories/company/name/${companyLongId}`, {
+    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/${companyLongId}`, {
         name: category
     })
     const result = checkCat.data
@@ -13,7 +13,7 @@ const feedCategory = async (category, token, companyLongId) => {
         theCat = result.category.id
     } else {
         console.log("creating category");
-        const getCatID = await axios.post(`http://localhost:4000/api/categories`, {
+        const getCatID = await axios.post(`https://market-server.azurewebsites.net/api/categories`, {
             name: category
         }, {
             headers: {
@@ -66,7 +66,7 @@ class PrintifyController {
         // const attr = params.shopId;
 
         try {
-            const getUser = await axios.post(`http://localhost:4000/api/auth/login`, {
+            const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
                 email: email,
                 password: password,
                 status: "active"
@@ -95,16 +95,16 @@ class PrintifyController {
                     x_printify_print_areas: JSON.stringify(product.print_areas),
                     // variants: JSON.stringify(product.variants),
                 };
-                const check = await axios.post("http://localhost:4000/api/products/search", {
+                const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
                     "x_printify_id": product.id,
                     "company_id": companyShortId
                 })
                 if (product.variants[0].is_available === false && check.data.products?.length > 0) {
-                    await axios.delete(`http://localhost:4000/api/products/delete/${check.data.products[0]?.id}`)
+                    await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
                     console.log("product deleted");
                 } else {
                     if (check.data.products?.length === 0) {
-                        const res = await axios.post("http://localhost:4000/api/products", body, {
+                        const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
                             }
@@ -112,7 +112,7 @@ class PrintifyController {
                         const pro = res.data
                         console.log(pro, companyShortId)
                     } else {
-                        const res = await axios.put(`http://localhost:4000/api/products/${check.data.products[0]?.id}`, body, {
+                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
                             }
@@ -176,9 +176,9 @@ class PrintifyController {
 const printifyCon = new PrintifyController
 
 const runPrintifyDaily = () => {
+    printifyCon.fetchProductByShop("15033405", "lilysblossom@gmail.com", "@Lilysblossom", "65fa2e797ac9c593c0c32cce", 286)
     cron.schedule("0 6 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15033405", "lilysblossom@gmail.com", "@Lilysblossom", "65fa2e797ac9c593c0c32cce", 286)
     })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
