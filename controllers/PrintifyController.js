@@ -89,10 +89,8 @@ class PrintifyController {
                     standard_price: product.variants[0]?.price?.toString(),
                     company_id: companyShortId,
                     x_printify_id: product.id,
-                    x_printify_blueprint_id: product.blueprint_id,
-                    x_printify_provider_id: product.print_provider_id,
                     x_printify_variant_id: product.variants[0]?.id,
-                    x_printify_print_areas: JSON.stringify(product.print_areas),
+                    x_printify_shop_id: product.shop_id.toString()
                     // variants: JSON.stringify(product.variants),
                 };
                 const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
@@ -112,7 +110,7 @@ class PrintifyController {
                         const pro = res.data
                         console.log(pro, companyShortId)
                     } else {
-                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
+                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/4775`, body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
                             }
@@ -152,11 +150,12 @@ class PrintifyController {
     createOrder = async (req, res) => {
         try {
             const body = req.body
+            const shopId = req.params.id
             if (!body) {
                 return res.status(200).json({ message: "send request body" })
             }
-            const attr = '13408821';
-            const order = this.service.createOrder(attr, body)
+            const order = await this.service.createOrder(shopId, body)
+            console.log(order);
             res.status(200).json(order)
         } catch (error) {
 
@@ -176,17 +175,33 @@ class PrintifyController {
 const printifyCon = new PrintifyController
 
 const runPrintifyDaily = () => {
+    printifyCon.fetchProductByShop("15033377", "thehebrewstore@gmail.com", "@Thehebrewstore", "65fafa76c51e02de041b2f7f", 288)
+    cron.schedule("0 3 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15141891", "swagcentral1@gmail.com", "@Swagcentral", "66055c3608bece50ea82bca0", 304)
+    })
     cron.schedule("0 6 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15033405", "lilysblossom@gmail.com", "@Lilysblossom", "65fa2e797ac9c593c0c32cce", 286)
     })
+    cron.schedule("0 9 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15141701", "playitagain@gmail.com", "@Clothing", "66054bda08bece50ea829206", 301)
+    })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15033377", "thehebrewstore@gmail.com", "@Thehebrewstore", "65fafa76c51e02de041b2f7f", 288)
+    })
+    cron.schedule("0 15 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15145610", "clothingEssentials@gmail.com", "@Clothing", "660543b108bece50ea827aa5", 300)
     })
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("14761883", "aboveallnations02@gmail.com", "@Aboveallnations", "65fa0bf718cfd854f818a1a8", 285)
+    })
+    cron.schedule("0 21 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15149110", "kidswag@gmail.com", "@Kidswag", "660562ce08bece50ea82cfb6", 305)
     })
 }
 
