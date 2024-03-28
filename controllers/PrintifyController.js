@@ -110,7 +110,7 @@ class PrintifyController {
                         const pro = res.data
                         console.log(pro, companyShortId)
                     } else {
-                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/4775`, body, {
+                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
                             }
