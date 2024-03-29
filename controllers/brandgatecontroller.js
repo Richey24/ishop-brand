@@ -142,7 +142,6 @@ const runFeedProductDaily = () => {
 
 const createOrder = async (req, res) => {
     try {
-        console.log(req.body);
         if (!req.body) {
             return res.status(400).json({ message: "send order body" })
         }

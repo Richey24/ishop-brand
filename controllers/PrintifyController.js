@@ -110,6 +110,7 @@ class PrintifyController {
                         const pro = res.data
                         console.log(pro, companyShortId)
                     } else {
+                        console.log(check.data.products[0]?.id);
                         const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
                             headers: {
                                 Authorization: `Bearer ${user.token}`
@@ -175,7 +176,6 @@ class PrintifyController {
 const printifyCon = new PrintifyController
 
 const runPrintifyDaily = () => {
-    printifyCon.fetchProductByShop("15033377", "thehebrewstore@gmail.com", "@Thehebrewstore", "65fafa76c51e02de041b2f7f", 288)
     cron.schedule("0 3 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15141891", "swagcentral1@gmail.com", "@Swagcentral", "66055c3608bece50ea82bca0", 304)
@@ -190,6 +190,7 @@ const runPrintifyDaily = () => {
     })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15033377", "thehebrewstore@gmail.com", "@Thehebrewstore", "65fafa76c51e02de041b2f7f", 288)
     })
     cron.schedule("0 15 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
