@@ -1,27 +1,18 @@
 
 const { default: axios } = require('axios');
 const cron = require("node-cron");
-const PrintifyService = require('../services/PrintifyService')
+const PrintifyService = require('../services/PrintifyService');
+const { searchProductPrintify, deleteProduct, addProduct, getComapnyCategoriesByName, createCategory, updateProduct } = require('../services/ProductService');
 
-const feedCategory = async (category, token, companyLongId) => {
+const feedCategory = async (category, companyLongId) => {
     let theCat;
-    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/${companyLongId}`, {
-        name: category
-    })
-    const result = checkCat.data
-    if (result.category) {
-        theCat = result.category.id
+    const checkCat = await getComapnyCategoriesByName(category, companyLongId)
+    if (checkCat) {
+        theCat = checkCat.id
     } else {
         console.log("creating category");
-        const getCatID = await axios.post(`https://market-server.azurewebsites.net/api/categories`, {
-            name: category
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-        const catID = getCatID.data
-        theCat = catID.id
+        const getCatID = await createCategory(category, companyLongId)
+        theCat = getCatID
     }
     return theCat
 }
@@ -62,20 +53,14 @@ class PrintifyController {
      * @param {*} res 
      * @returns 
      */
-    fetchProductByShop = async (shopId, email, password, companyLongId, companyShortId) => {
+    fetchProductByShop = async (shopId, companyLongId, companyShortId) => {
         // const attr = params.shopId;
 
         try {
-            const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
-                email: email,
-                password: password,
-                status: "active"
-            })
-            const user = getUser.data
             const products = await this.service.getShopProducts(shopId);
             console.log(products);
             for (const product of products.data) {
-                const category = await feedCategory(product.tags[0], user.token, companyLongId)
+                const category = await feedCategory(product.tags[0], companyLongId)
                 const body = {
                     name: product.title,
                     category_id: category.toString(),
@@ -93,31 +78,16 @@ class PrintifyController {
                     x_printify_shop_id: product.shop_id.toString()
                     // variants: JSON.stringify(product.variants),
                 };
-                const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
-                    "x_printify_id": product.id,
-                    "company_id": companyShortId
-                })
-                if (product.variants[0].is_available === false && check.data.products?.length > 0) {
-                    await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
+                const check = await searchProductPrintify(product.id, companyShortId)
+                if (product.variants[0].is_available === false && check?.length > 0) {
+                    await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
-                    if (check.data.products?.length === 0) {
-                        const res = await axios.post("https://market-server.azurewebsites.net/api/products", body, {
-                            headers: {
-                                Authorization: `Bearer ${user.token}`
-                            }
-                        })
-                        const pro = res.data
-                        console.log(pro, companyShortId)
+                    if (check?.length === 0) {
+                        const res = await addProduct({ product: body })
+                        console.log(res, companyShortId)
                     } else {
-                        console.log(check.data.products[0]?.id);
-                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
-                            headers: {
-                                Authorization: `Bearer ${user.token}`
-                            }
-                        })
-                        const pro = res.data
-                        console.log(pro, companyShortId)
+                        await updateProduct({ product: body, productId: check[0]?.id })
                     }
                 }
             }
@@ -163,14 +133,6 @@ class PrintifyController {
         }
     }
 
-    // saveProduct = async (req, res) => {
-    //     const product = Product(req.body);
-    //     try {
-
-    //     } catch (error) {
-    //         return res.status(400).send(error);
-    //     }
-    // }
 }
 
 const printifyCon = new PrintifyController
@@ -178,31 +140,31 @@ const printifyCon = new PrintifyController
 const runPrintifyDaily = () => {
     cron.schedule("0 3 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15141891", "swagcentral1@gmail.com", "@Swagcentral", "66055c3608bece50ea82bca0", 304)
+        printifyCon.fetchProductByShop("15141891", "66055c3608bece50ea82bca0", 304)
     })
     cron.schedule("0 6 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15033405", "lilysblossom@gmail.com", "@Lilysblossom", "65fa2e797ac9c593c0c32cce", 286)
+        printifyCon.fetchProductByShop("15033405", "65fa2e797ac9c593c0c32cce", 286)
     })
     cron.schedule("0 9 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15141701", "playitagain@gmail.com", "@Clothing", "66054bda08bece50ea829206", 301)
+        printifyCon.fetchProductByShop("15141701", "66054bda08bece50ea829206", 301)
     })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15033377", "thehebrewstore@gmail.com", "@Thehebrewstore", "65fafa76c51e02de041b2f7f", 288)
+        printifyCon.fetchProductByShop("15033377", "65fafa76c51e02de041b2f7f", 288)
     })
     cron.schedule("0 15 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15145610", "clothingEssentials@gmail.com", "@Clothing", "660543b108bece50ea827aa5", 300)
+        printifyCon.fetchProductByShop("15145610", "660543b108bece50ea827aa5", 300)
     })
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("14761883", "aboveallnations02@gmail.com", "@Aboveallnations", "65fa0bf718cfd854f818a1a8", 285)
+        printifyCon.fetchProductByShop("14761883", "65fa0bf718cfd854f818a1a8", 285)
     })
     cron.schedule("0 21 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15149110", "kidswag@gmail.com", "@Kidswag", "660562ce08bece50ea82cfb6", 305)
+        printifyCon.fetchProductByShop("15149110", "660562ce08bece50ea82cfb6", 305)
     })
 }
 

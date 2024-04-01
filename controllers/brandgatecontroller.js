@@ -1,7 +1,8 @@
 const { default: axios } = require("axios");
 const cron = require("node-cron");
+const { getComapnyCategoriesByName, createCategory, getSizeVariant, searchProduct, deleteProduct, addProductVariant, updateProduct } = require("../services/ProductService");
 
-const feedCategory = async (category, token) => {
+const feedCategory = async (category) => {
     let theCat;
     const response = await axios.get(`https://nova.shopwoo.com/api/v1/categories/${category}?store_id=2&lang=en`, {
         auth: {
@@ -10,23 +11,14 @@ const feedCategory = async (category, token) => {
         }
     })
     const cat = response.data
-    const checkCat = await axios.post(`https://market-server.azurewebsites.net/api/categories/company/name/65efbcf32f64e5621d536c68`, {
-        name: cat.name
-    })
-    const result = checkCat.data
-    if (result.category) {
-        theCat = result.category.id
+    const checkCat = await getComapnyCategoriesByName(cat.name, "65efbcf32f64e5621d536c68")
+
+    if (checkCat) {
+        theCat = checkCat.id
     } else {
         console.log("creating category");
-        const getCatID = await axios.post(`https://market-server.azurewebsites.net/api/categories`, {
-            name: cat.name
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-        const catID = getCatID.data
-        theCat = catID.id
+        const getCatID = await createCategory(cat.name, "65efbcf32f64e5621d536c68")
+        theCat = getCatID
     }
     return theCat
 }
@@ -38,20 +30,22 @@ const stockQty = async (variants) => {
 
 const getVariants = async (variants) => {
     const res = await Promise.all(variants.map(async (variant) => {
-        const checkVar = await axios("https://market-server.azurewebsites.net/api/products/attribute-values/3")
-        const varia = checkVar.data.values.find((val) => val.name === variant.attributes[0].option)
-        if (varia) {
-            return [{
-                attributeId: 3,
-                price_extra: 0,
-                valueId: varia.id
-            }]
-        } else {
-            return [{
-                attributeId: 3,
-                price_extra: 0,
-                value: variant.attributes[0].option
-            }]
+        if (variant.in_stock) {
+            const checkVar = await getSizeVariant()
+            const varia = checkVar.find((val) => val.name === variant.attributes[0].option)
+            if (varia) {
+                return [{
+                    attributeId: 3,
+                    price_extra: 0,
+                    valueId: varia.id
+                }]
+            } else {
+                return [{
+                    attributeId: 3,
+                    price_extra: 0,
+                    value: variant.attributes[0].option
+                }]
+            }
         }
     }))
     return res
@@ -60,13 +54,7 @@ const getVariants = async (variants) => {
 const feedProduct = async () => {
     try {
         for (let i = 1; i < 101; i++) {
-            const getUser = await axios.post(`https://market-server.azurewebsites.net/api/auth/login`, {
-                email: "theblackmarket@gmail.com",
-                password: "@Theblackmarket",
-                status: "active"
-            })
-            const user = getUser.data
-            const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
+            const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=20&per_page=100&lang=en`, {
                 auth: {
                     username: "info@dreamtechlabs.net",
                     password: "Aim4$ucce$$"
@@ -76,12 +64,13 @@ const feedProduct = async () => {
             for (const product of products) {
                 const variantObj = {}
                 product.variations.map((variant) => {
-                    variantObj[`${variant.attributes[0].option}`] = variant.id
+                    if (variant.in_stock) {
+                        variantObj[`${variant.attributes[0].option}`] = variant.id
+                    }
                 })
-                const categories = await feedCategory(product.categories[0], user.token)
+                const categories = await feedCategory(product.categories[0])
                 const qty = await stockQty(product.variations)
                 const variations = await getVariants(product.variations)
-                console.log(variations);
                 const body = {
                     name: product.name,
                     category_id: categories.toString(),
@@ -96,34 +85,23 @@ const feedProduct = async () => {
                     dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
                     standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
                     company_id: 226,
-                    variants: JSON.stringify(variations),
+                    variants: variations,
                     brand_gate_id: product.id,
-                    brand_gate_variant_id: JSON.stringify(variantObj)
                 };
-                const check = await axios.post("https://market-server.azurewebsites.net/api/products/search", {
-                    "name": product.name,
-                    "company_id": 226
-                })
-                if ((product.in_stock === false || product.variations[0]?.in_stock === false || product.variations.length === 0) && check.data.products?.length > 0) {
-                    await axios.delete(`https://market-server.azurewebsites.net/api/products/delete/${check.data.products[0]?.id}`)
+                if (Object.keys(variantObj).length > 0) {
+                    body.brand_gate_variant_id = JSON.stringify(variantObj)
+                }
+                console.log(body);
+                const check = await searchProduct(product.name, 226)
+                if (product.in_stock === false && check?.length > 0) {
+                    await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
-                    if (check.data.products?.length === 0 && product.in_stock !== false && product.variations[0]?.in_stock !== false && product.variations.length > 0) {
-                        const res = await axios.post("https://market-server.azurewebsites.net/api/products/variants", body, {
-                            headers: {
-                                Authorization: `Bearer ${user.token}`
-                            }
-                        })
-                        const pro = res.data
-                        console.log(pro)
-                    } else if (check.data.products?.length > 0) {
-                        const res = await axios.put(`https://market-server.azurewebsites.net/api/products/${check.data.products[0]?.id}`, body, {
-                            headers: {
-                                Authorization: `Bearer ${user.token}`
-                            }
-                        })
-                        const pro = res.data
-                        console.log(pro)
+                    if (check?.length === 0 && product.in_stock !== false) {
+                        const res = await addProductVariant({ product: body })
+                        console.log(res);
+                    } else if (check?.length > 0) {
+                        await updateProduct({ product: body, productId: check[0]?.id })
                     }
                 }
             }
@@ -135,8 +113,8 @@ const feedProduct = async () => {
 
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
-        console.log(`running field product daily at ${new Date().toLocaleString()}`);
         feedProduct()
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
     })
 }
 
