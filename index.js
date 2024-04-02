@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/brandgate", brandgaterouter)
 app.use("/api/printify", productsRoutes);
-app.use("/api/webhook", orderProduct)
+app.post("/api/webhook", orderProduct)
 
 app.listen(PORT, () => {
     console.log(`App is running on ${PORT}`);

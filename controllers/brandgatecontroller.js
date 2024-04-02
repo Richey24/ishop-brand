@@ -85,13 +85,12 @@ const feedProduct = async () => {
                     dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
                     standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
                     company_id: 226,
-                    variants: variations,
                     brand_gate_id: product.id,
                 };
                 if (Object.keys(variantObj).length > 0) {
                     body.brand_gate_variant_id = JSON.stringify(variantObj)
+                    body.variants = variations
                 }
-                console.log(body);
                 const check = await searchProduct(product.name, 226)
                 if (product.in_stock === false && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
@@ -112,9 +111,9 @@ const feedProduct = async () => {
 }
 
 const runFeedProductDaily = () => {
-    feedProduct()
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        feedProduct()
     })
 }
 

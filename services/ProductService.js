@@ -100,12 +100,11 @@ const addProductVariant = async (params) => {
             : [],
     };
 
-    console.log("templateData", templateData);
     const templateId = await createProductTemplate(templateData);
 
     if (params?.product?.variants && params?.product?.variants.length > 0) {
         await params?.product?.variants?.forEach(async (container) => {
-            await container.forEach(async (variant, idx) => {
+            await container?.forEach(async (variant, idx) => {
                 // console.log("variant", variant);
 
                 let attributeValueId;
