@@ -115,7 +115,6 @@ const addProductVariant = async (params) => {
                         attribute_id: variant?.attributeId,
                         sequence: 1, // Optional: Display sequence
                     };
-                    console.log(attributeValueData);
                     attributeValueId = await Odoo.execute_kw(
                         "product.attribute.value",
                         "create",
