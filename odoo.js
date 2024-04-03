@@ -5,5 +5,5 @@ module.exports = new Odoo({
     port: process.env.ODOO_PORT,
     db: process.env.ODOO_DB,
     username: process.env.ODOO_USERNAME,
-    password: process.env.ODOO_PASSWORD
+    password: "infoBlack11#"
 }); 

@@ -1,6 +1,6 @@
 const { default: axios } = require("axios");
 const cron = require("node-cron");
-const { getComapnyCategoriesByName, createCategory, getSizeVariant, searchProduct, deleteProduct, addProductVariant, updateProduct } = require("../services/ProductService");
+const { getComapnyCategoriesByName, createCategory, getVariant, searchProduct, deleteProduct, addProductVariant, updateProduct } = require("../services/ProductService");
 
 const feedCategory = async (category) => {
     let theCat;
@@ -11,13 +11,13 @@ const feedCategory = async (category) => {
         }
     })
     const cat = response.data
-    const checkCat = await getComapnyCategoriesByName(cat.name, "65efbcf32f64e5621d536c68")
+    const checkCat = await getComapnyCategoriesByName(cat.name, "660c24924106500891da4c07")
 
     if (checkCat) {
         theCat = checkCat.id
     } else {
         console.log("creating category");
-        const getCatID = await createCategory(cat.name, "65efbcf32f64e5621d536c68")
+        const getCatID = await createCategory(cat.name, "660c24924106500891da4c07")
         theCat = getCatID
     }
     return theCat
@@ -31,18 +31,18 @@ const stockQty = async (variants) => {
 const getVariants = async (variants) => {
     const res = await Promise.all(variants.map(async (variant) => {
         if (variant.in_stock) {
-            const checkVar = await getSizeVariant()
+            const checkVar = await getVariant(2)
             const varia = checkVar.find((val) => val.name === variant.attributes[0].option)
             if (varia) {
                 return [{
-                    attributeId: 3,
-                    price_extra: 0,
+                    attributeId: 2,
+                    price_extra: variant.regular_price - variants[0].regular_price,
                     valueId: varia.id
                 }]
             } else {
                 return [{
-                    attributeId: 3,
-                    price_extra: 0,
+                    attributeId: 2,
+                    price_extra: variant.regular_price - variants[0].regular_price,
                     value: variant.attributes[0].option
                 }]
             }
@@ -84,14 +84,14 @@ const feedProduct = async () => {
                     images: JSON.stringify(product.images.map((image) => image.src)),
                     dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
                     standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
-                    company_id: 226,
+                    company_id: 2,
                     brand_gate_id: product.id,
                 };
                 if (Object.keys(variantObj).length > 0) {
                     body.brand_gate_variant_id = JSON.stringify(variantObj)
                     body.variants = variations
                 }
-                const check = await searchProduct(product.name, 226)
+                const check = await searchProduct(product.name, 2)
                 if (product.in_stock === false && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");

@@ -260,20 +260,19 @@ const createCategory = async (name, company_id) => {
         const id = await Odoo.execute_kw("product.public.category", "create", [
             { name: name },
         ]);
-        await Company.findByIdAndUpdate(company_id, id);
+        await Company.findByIdAndUpdate(company_id, { $push: { categories: id } });
 
         return id;
     } catch (e) {
-        res.status(500).json(e);
         console.error("Error when trying to connect odoo xml-rpc", e);
     }
 }
 
-const getSizeVariant = async () => {
+const getVariant = async (num) => {
     await Odoo.connect();
 
     const attributeValues = await Odoo.execute_kw("product.attribute.value", "search_read", [
-        [["attribute_id", "=", 3]],
+        [["attribute_id", "=", num]],
         ["name", "display_name", "attribute_id"],
     ]);
 
@@ -323,7 +322,7 @@ module.exports = {
     deleteProduct,
     getComapnyCategoriesByName,
     createCategory,
-    getSizeVariant,
+    getVariant,
     searchProduct,
     searchProductPrintify
 }
