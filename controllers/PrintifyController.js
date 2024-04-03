@@ -30,13 +30,13 @@ const getVariants = async (variants) => {
             if (varia) {
                 return [{
                     attributeId: 4,
-                    price_extra: (variant.price - variants[0]?.price) / 100,
+                    price_extra: ((variant.price - variants[0]?.price) / 100).toFixed(2),
                     valueId: varia.id
                 }]
             } else {
                 return [{
                     attributeId: 4,
-                    price_extra: (variant.price - variants[0]?.price) / 100,
+                    price_extra: ((variant.price - variants[0]?.price) / 100).toFixed(2),
                     value: variant.title
                 }]
             }
@@ -93,12 +93,12 @@ class PrintifyController {
                     category_id: category.toString(),
                     uom_name: "1",
                     published: "true",
-                    list_price: (product.variants[0]?.cost / 100)?.toString(),
+                    list_price: (product.variants[0]?.cost / 100).toFixed(2)?.toString(),
                     description: product.description,
                     qty: qty,
                     weight: product.variants[0]?.gram,
                     images: JSON.stringify(product.images.map((image) => image.src)),
-                    standard_price: (product.variants[0]?.price / 100)?.toString(),
+                    standard_price: (product.variants[0]?.price / 100).toFixed(2)?.toString(),
                     company_id: companyShortId,
                     x_printify_id: product.id,
                     x_printify_variant_id: product.variants[0]?.id,
@@ -156,8 +156,8 @@ const runPrintifyDaily = () => {
     // })
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("14761883", "660c3ca14106500891da5954", 5)
     })
+    printifyCon.fetchProductByShop("14761883", "660c3ca14106500891da5954", 5)
     // cron.schedule("0 21 * * *", () => {
     //     console.log(`running field product daily at ${new Date().toLocaleString()}`);
     //     printifyCon.fetchProductByShop("15149110", "660562ce08bece50ea82cfb6", 305)
