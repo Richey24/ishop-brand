@@ -53,7 +53,7 @@ const getVariants = async (variants) => {
 
 const feedProduct = async () => {
     try {
-        for (let i = 1; i < 101; i++) {
+        for (let i = 6; i < 101; i++) {
             const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
                 auth: {
                     username: "info@dreamtechlabs.net",

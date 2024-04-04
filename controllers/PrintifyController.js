@@ -93,12 +93,12 @@ class PrintifyController {
                     category_id: category.toString(),
                     uom_name: "1",
                     published: "true",
-                    list_price: (product.variants[0]?.cost / 100).toFixed(2)?.toString(),
+                    list_price: (product.variants[0]?.cost / 100).toFixed(2),
                     description: product.description,
                     qty: qty,
                     weight: product.variants[0]?.gram,
                     images: JSON.stringify(product.images.map((image) => image.src)),
-                    standard_price: (product.variants[0]?.price / 100).toFixed(2)?.toString(),
+                    standard_price: (product.variants[0]?.price / 100).toFixed(2),
                     company_id: companyShortId,
                     x_printify_id: product.id,
                     x_printify_variant_id: product.variants[0]?.id,
@@ -118,7 +118,7 @@ class PrintifyController {
                 } else {
                     if (check?.length === 0 && product.variants[0].is_available !== false) {
                         const res = await addProductVariant({ product: body })
-                        console.log(res, companyShortId)
+                        console.log("created-->", res, companyShortId)
                     } else {
                         await updateProduct({ product: body, productId: check[0]?.id })
                     }
@@ -142,10 +142,10 @@ const runPrintifyDaily = () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15033405", "660c41884106500891da5e88", 7)
     })
-    // cron.schedule("0 9 * * *", () => {
-    //     console.log(`running field product daily at ${new Date().toLocaleString()}`);
-    //     printifyCon.fetchProductByShop("15141701", "66054bda08bece50ea829206", 301)
-    // })
+    cron.schedule("0 9 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15141701", "660c9b2c03307982e1f4e328", 10)
+    })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15033377", "660c453e4106500891da63ad", 8)
@@ -156,8 +156,8 @@ const runPrintifyDaily = () => {
     // })
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("14761883", "660c3ca14106500891da5954", 5)
     })
-    printifyCon.fetchProductByShop("14761883", "660c3ca14106500891da5954", 5)
     // cron.schedule("0 21 * * *", () => {
     //     console.log(`running field product daily at ${new Date().toLocaleString()}`);
     //     printifyCon.fetchProductByShop("15149110", "660562ce08bece50ea82cfb6", 305)
