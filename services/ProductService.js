@@ -123,7 +123,7 @@ const addProductVariant = async (params) => {
                 } else {
                     attributeValueId = variant?.valueId;
                 }
-                console.log(attributeValueId);
+                // console.log(attributeValueId);
                 const attributeLineData = {
                     product_tmpl_id: templateId,
                     attribute_id: variant?.attributeId,
