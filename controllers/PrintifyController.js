@@ -110,7 +110,6 @@ class PrintifyController {
                     body.variants = variants
                 }
 
-                console.log(body);
                 const check = await searchProductPrintify(product.id, companyShortId)
                 if (product.variants[0].is_available === false && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
@@ -158,10 +157,10 @@ const runPrintifyDaily = () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("14761883", "660c3ca14106500891da5954", 5)
     })
-    // cron.schedule("0 21 * * *", () => {
-    //     console.log(`running field product daily at ${new Date().toLocaleString()}`);
-    //     printifyCon.fetchProductByShop("15149110", "660562ce08bece50ea82cfb6", 305)
-    // })
+    cron.schedule("0 21 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15149110", "660ec736880f6552fe3fe6bb", 18)
+    })
 }
 
 module.exports = {

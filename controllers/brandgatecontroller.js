@@ -53,7 +53,7 @@ const getVariants = async (variants) => {
 
 const feedProduct = async () => {
     try {
-        for (let i = 24; i < 101; i++) {
+        for (let i = 34; i < 101; i++) {
             const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
                 auth: {
                     username: "info@dreamtechlabs.net",
@@ -113,8 +113,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        feedProduct()
     })
-    feedProduct()
 }
 
 const createOrder = async (req, res) => {
