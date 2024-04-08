@@ -93,11 +93,12 @@ const feedProduct = async () => {
                 }
                 const check = await searchProduct(product.name, 2)
                 if (check?.length > 1) {
-                    check.shift()
+                    const arr = check.shift()
                     check.forEach(async (che) => {
                         await deleteProduct(che?.id)
                         console.log("duplicate product deleted");
                     })
+                    check.unshift(arr)
                 }
                 if (product.in_stock === false && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
