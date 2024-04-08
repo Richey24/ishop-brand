@@ -111,6 +111,13 @@ class PrintifyController {
                 }
 
                 const check = await searchProductPrintify(product.id, companyShortId)
+                if (check?.length > 1) {
+                    check.pop()
+                    check.forEach(async (che) => {
+                        await deleteProduct(che?.id)
+                        console.log("duplicate product deleted");
+                    })
+                }
                 if (product.variants[0].is_available === false && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
