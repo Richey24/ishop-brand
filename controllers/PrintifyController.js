@@ -112,7 +112,7 @@ class PrintifyController {
 
                 const check = await searchProductPrintify(product.id, companyShortId)
                 if (check?.length > 1) {
-                    check.pop()
+                    check.shift()
                     check.forEach(async (che) => {
                         await deleteProduct(che?.id)
                         console.log("duplicate product deleted");
@@ -168,6 +168,10 @@ const runPrintifyDaily = () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15149110", "660ec736880f6552fe3fe6bb", 18)
     })
+}
+
+const shippingRates = async (req, res) => {
+    "/v1/shops/{shop_id}/orders/shipping.json"
 }
 
 module.exports = {

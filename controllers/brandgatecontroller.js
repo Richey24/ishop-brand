@@ -93,7 +93,7 @@ const feedProduct = async () => {
                 }
                 const check = await searchProduct(product.name, 2)
                 if (check?.length > 1) {
-                    check.pop()
+                    check.shift()
                     check.forEach(async (che) => {
                         await deleteProduct(che?.id)
                         console.log("duplicate product deleted");
