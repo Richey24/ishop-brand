@@ -103,7 +103,7 @@ const addProductVariant = async (params) => {
 
     if (params?.product?.variants && params?.product?.variants.length > 0) {
         for (const container of params?.product?.variants) {
-            if (container.length > 0) {
+            if (container) {
                 for (const variant of container) {
 
                     let attributeValueId;
