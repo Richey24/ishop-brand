@@ -103,56 +103,58 @@ const addProductVariant = async (params) => {
 
     if (params?.product?.variants && params?.product?.variants.length > 0) {
         for (const container of params?.product?.variants) {
-            for (const variant of container) {
+            if (container.length > 0) {
+                for (const variant of container) {
 
-                let attributeValueId;
+                    let attributeValueId;
 
-                if (!variant?.valueId) {
-                    const attributeValueData = {
-                        name: variant?.value, // Replace with the actual value
+                    if (!variant?.valueId) {
+                        const attributeValueData = {
+                            name: variant?.value, // Replace with the actual value
+                            attribute_id: variant?.attributeId,
+                            sequence: 1, // Optional: Display sequence
+                        };
+                        attributeValueId = await Odoo.execute_kw(
+                            "product.attribute.value",
+                            "create",
+                            [attributeValueData],
+                        );
+                    } else {
+                        attributeValueId = variant?.valueId;
+                    }
+                    // console.log(attributeValueId);
+                    const attributeLineData = {
+                        product_tmpl_id: templateId,
                         attribute_id: variant?.attributeId,
-                        sequence: 1, // Optional: Display sequence
+                        value_ids: [[6, 0, [attributeValueId]]],
                     };
-                    attributeValueId = await Odoo.execute_kw(
-                        "product.attribute.value",
-                        "create",
-                        [attributeValueData],
-                    );
-                } else {
-                    attributeValueId = variant?.valueId;
-                }
-                // console.log(attributeValueId);
-                const attributeLineData = {
-                    product_tmpl_id: templateId,
-                    attribute_id: variant?.attributeId,
-                    value_ids: [[6, 0, [attributeValueId]]],
-                };
 
-                const attributeLineId = await Odoo.execute_kw(
-                    "product.template.attribute.line",
-                    "create",
-                    [attributeLineData],
-                );
-
-                if (variant?.price_extra && variant?.price_extra !== 0) {
-                    ///ADD PRICE_EXTRA
-                    const attributeLineRespData = await Odoo.execute_kw(
+                    const attributeLineId = await Odoo.execute_kw(
                         "product.template.attribute.line",
-                        "read",
-                        [[attributeLineId], ["product_template_value_ids"]],
+                        "create",
+                        [attributeLineData],
                     );
 
-                    const productTemplateValueIds =
-                        attributeLineRespData[0]?.product_template_value_ids || [];
-                    const attributeValueWriteData = {
-                        price_extra: variant?.price_extra, // Set the price adjustment here
-                    };
+                    if (variant?.price_extra && variant?.price_extra !== 0) {
+                        ///ADD PRICE_EXTRA
+                        const attributeLineRespData = await Odoo.execute_kw(
+                            "product.template.attribute.line",
+                            "read",
+                            [[attributeLineId], ["product_template_value_ids"]],
+                        );
 
-                    await Odoo.execute_kw(
-                        "product.template.attribute.value",
-                        "write",
-                        [[productTemplateValueIds[0]], attributeValueWriteData],
-                    );
+                        const productTemplateValueIds =
+                            attributeLineRespData[0]?.product_template_value_ids || [];
+                        const attributeValueWriteData = {
+                            price_extra: variant?.price_extra, // Set the price adjustment here
+                        };
+
+                        await Odoo.execute_kw(
+                            "product.template.attribute.value",
+                            "write",
+                            [[productTemplateValueIds[0]], attributeValueWriteData],
+                        );
+                    }
                 }
             }
         }
