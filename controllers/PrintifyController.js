@@ -79,7 +79,7 @@ class PrintifyController {
         try {
             const products = await this.service.getShopProducts(shopId);
             await Odoo.connect();
-            for (const product of products.data.slice(72)) {
+            for (const product of products.data) {
                 const variantObj = {}
                 product.variants.map((variant) => {
                     if (variant.is_available) {
