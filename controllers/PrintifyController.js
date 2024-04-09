@@ -111,7 +111,6 @@ class PrintifyController {
                     body.x_printify_variant_id = JSON.stringify(variantObj)
                     body.variants = variants
                 }
-                console.log(body);
                 const check = await searchProductPrintify(product.id, companyShortId)
                 if (check?.length > 1) {
                     const arr = check.shift()
@@ -189,7 +188,7 @@ const getShippingRates = async (req, res) => {
             const pro = product.data.product[0]
             return {
                 product_id: pro.x_printify_id,
-                variant_id: JSON.parse(pro.x_printify_variant_id)[JSON.parse(item.x_variant)[0].name],
+                variant_id: JSON.parse(pro.x_printify_variant_id)[JSON.parse(item.x_variant)[0]?.name],
                 quantity: item.product_uom_qty
             }
         }))
