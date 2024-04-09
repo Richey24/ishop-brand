@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
 const cron = require("node-cron");
+const Odoo = require("../odoo");
 const { getComapnyCategoriesByName, createCategory, getVariant, searchProduct, deleteProduct, addProductVariant, updateProduct } = require("../services/ProductService");
 
 const feedCategory = async (category) => {
@@ -60,6 +61,7 @@ const feedProduct = async () => {
                     password: "Aim4$ucce$$"
                 }
             })
+            await Odoo.connect();
             const products = response.data
             for (const product of products) {
                 const variantObj = {}

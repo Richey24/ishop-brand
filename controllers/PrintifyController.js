@@ -2,7 +2,8 @@
 const { default: axios } = require('axios');
 const cron = require("node-cron");
 const PrintifyService = require('../services/PrintifyService');
-const { searchProductPrintify, deleteProduct, addProduct, getComapnyCategoriesByName, createCategory, updateProduct, getVariant, addProductVariant } = require('../services/ProductService');
+const Odoo = require("../odoo");
+const { searchProductPrintify, deleteProduct, getComapnyCategoriesByName, createCategory, updateProduct, getVariant, addProductVariant } = require('../services/ProductService');
 
 const feedCategory = async (category, companyLongId) => {
     let theCat;
@@ -77,6 +78,7 @@ class PrintifyController {
 
         try {
             const products = await this.service.getShopProducts(shopId);
+            await Odoo.connect();
             for (const product of products.data) {
                 const variantObj = {}
                 product.variants.map((variant) => {
