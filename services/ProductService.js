@@ -54,8 +54,6 @@ const addProduct = async (params) => {
 
 const createProductTemplate = async (templateData) => {
     try {
-
-        ("product.template");
         return await Odoo.execute_kw("product.template", "create", [templateData]);
     } catch (error) {
         console.error("Error creating product template:", error);
