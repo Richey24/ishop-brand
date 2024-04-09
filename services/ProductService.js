@@ -54,6 +54,7 @@ const addProduct = async (params) => {
 
 const createProductTemplate = async (templateData) => {
     try {
+
         return await Odoo.execute_kw("product.template", "create", [templateData]);
     } catch (error) {
         console.error("Error creating product template:", error);
@@ -63,6 +64,7 @@ const createProductTemplate = async (templateData) => {
 
 
 const addProductVariant = async (params) => {
+
     const templateData = {
         base_unit_count: params.product.qty,
         public_categ_ids: [+params.product.category_id],
@@ -100,9 +102,8 @@ const addProductVariant = async (params) => {
     const templateId = await createProductTemplate(templateData);
 
     if (params?.product?.variants && params?.product?.variants.length > 0) {
-        await params?.product?.variants?.forEach(async (container) => {
-            await container?.forEach(async (variant, idx) => {
-                // console.log("variant", variant);
+        for (const container of params?.product?.variants) {
+            for (const variant of container) {
 
                 let attributeValueId;
 
@@ -153,8 +154,8 @@ const addProductVariant = async (params) => {
                         [[productTemplateValueIds[0]], attributeValueWriteData],
                     );
                 }
-            });
-        });
+            }
+        }
     }
 
     return templateId;
@@ -225,6 +226,7 @@ const deleteProduct = async (id) => {
 };
 
 const getComapnyCategoriesByName = async (name, company_id) => {
+
     const company = await Company.findById(company_id);
     let categories = await Odoo.execute_kw(
         "product.public.category",
@@ -265,6 +267,7 @@ const createCategory = async (name, company_id) => {
 
 const getVariant = async (num) => {
 
+
     const attributeValues = await Odoo.execute_kw("product.attribute.value", "search_read", [
         [["attribute_id", "=", num]],
         ["name", "display_name", "attribute_id"],
@@ -274,6 +277,7 @@ const getVariant = async (num) => {
 }
 
 const searchProduct = async (name, company_id) => {
+
     const products = await Odoo.execute_kw(
         "product.template",
         "search_read",
@@ -291,6 +295,7 @@ const searchProduct = async (name, company_id) => {
 }
 
 const searchProductPrintify = async (id, company_id) => {
+
     const products = await Odoo.execute_kw(
         "product.template",
         "search_read",

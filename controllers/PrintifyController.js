@@ -11,8 +11,8 @@ const feedCategory = async (category, companyLongId) => {
     if (checkCat) {
         theCat = checkCat.id
     } else {
-        console.log("creating category");
         const getCatID = await createCategory(category, companyLongId)
+        console.log("created category", getCatID);
         theCat = getCatID
     }
     return theCat
@@ -24,9 +24,9 @@ const stockQty = async (variants) => {
 }
 
 const getVariants = async (variants) => {
+    const checkVar = await getVariant(4)
     const res = await Promise.all(variants.map(async (variant) => {
         if (variant.is_available) {
-            const checkVar = await getVariant(4)
             const varia = checkVar.find((val) => val.name === variant.title)
             if (varia) {
                 return [{
@@ -79,7 +79,7 @@ class PrintifyController {
         try {
             const products = await this.service.getShopProducts(shopId);
             await Odoo.connect();
-            for (const product of products.data) {
+            for (const product of products.data.slice(72)) {
                 const variantObj = {}
                 product.variants.map((variant) => {
                     if (variant.is_available) {
@@ -111,7 +111,7 @@ class PrintifyController {
                     body.x_printify_variant_id = JSON.stringify(variantObj)
                     body.variants = variants
                 }
-
+                console.log(body);
                 const check = await searchProductPrintify(product.id, companyShortId)
                 if (check?.length > 1) {
                     const arr = check.shift()
@@ -134,7 +134,7 @@ class PrintifyController {
                 }
             }
         } catch (err) {
-            console.log(err);
+            console.log("500", err);
         }
     }
 
