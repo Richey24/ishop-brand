@@ -79,7 +79,7 @@ class PrintifyController {
         try {
             const products = await this.service.getShopProducts(shopId);
             await Odoo.connect();
-            for (const product of products.data) {
+            for (const product of products.data.slice(84)) {
                 const variantObj = {}
                 product.variants.map((variant) => {
                     if (variant.is_available) {
@@ -156,8 +156,8 @@ const runPrintifyDaily = () => {
     })
     cron.schedule("0 12 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        printifyCon.fetchProductByShop("15033377", "660c453e4106500891da63ad", 8)
     })
+    printifyCon.fetchProductByShop("15033377", "660c453e4106500891da63ad", 8)
     cron.schedule("0 15 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15145610", "660eda16880f6552fe3ff895", 19)
