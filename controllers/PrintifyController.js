@@ -77,58 +77,68 @@ class PrintifyController {
         // const attr = params.shopId;
 
         try {
+            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6ImEwZjkwMTc2YTg2OWZlNGNmNTkzM2NkNGY4YzJhMWJjYTdkMTE4ZDNkY2FjNzQ5ZDhjZTE3YzYzNjAyOTcwNjlmYTM4MzJkZjcxOWI5YmM4IiwiaWF0IjoxNzExNDk0MTM5LjU0ODkxOCwibmJmIjoxNzExNDk0MTM5LjU0ODkyLCJleHAiOjE3NDMwMzAxMzkuNTQyMDg4LCJzdWIiOiIxNzM1ODA2MCIsInNjb3BlcyI6WyJzaG9wcy5tYW5hZ2UiLCJzaG9wcy5yZWFkIiwiY2F0YWxvZy5yZWFkIiwib3JkZXJzLnJlYWQiLCJvcmRlcnMud3JpdGUiLCJwcm9kdWN0cy5yZWFkIiwicHJvZHVjdHMud3JpdGUiLCJ3ZWJob29rcy5yZWFkIiwid2ViaG9va3Mud3JpdGUiLCJ1cGxvYWRzLnJlYWQiLCJ1cGxvYWRzLndyaXRlIiwicHJpbnRfcHJvdmlkZXJzLnJlYWQiXX0.Agtw2qlnOYSDaPG_CwaQo5q8bLGgJLRSKVjOh4lrsAj50dGH_ldMBFvpE_ujq0EuAdJ5gOdOalw3rZ0-Hnc';
             const products = await this.service.getShopProducts(shopId);
-            await Odoo.connect();
-            for (const product of products.data.slice(84)) {
-                const variantObj = {}
-                product.variants.map((variant) => {
-                    if (variant.is_available) {
-                        variantObj[`${variant.title}`] = variant.id
+            for (let i = 1; i <= Number((products.total / products.per_page).toFixed()); i++) {
+                const paginated = await axios.get(`https://api.printify.com/v1/shops/${shopId}/products.json?page=${i}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
                 })
-                const category = await feedCategory(product.tags[0], companyLongId)
-                const qty = await stockQty(product.variants)
-                const variants = await getVariants(product.variants)
-
-                const body = {
-                    name: product.title,
-                    category_id: category.toString(),
-                    uom_name: "1",
-                    published: "true",
-                    list_price: (product.variants[0]?.cost / 100).toFixed(2),
-                    description: product.description,
-                    qty: qty,
-                    weight: product.variants[0]?.gram,
-                    images: JSON.stringify(product.images.map((image) => image.src)),
-                    standard_price: (product.variants[0]?.price / 100).toFixed(2),
-                    company_id: companyShortId,
-                    x_printify_id: product.id,
-                    x_printify_variant_id: product.variants[0]?.id,
-                    x_printify_shop_id: product.shop_id.toString()
-                };
-
-                if (Object.keys(variantObj).length > 0) {
-                    body.x_printify_variant_id = JSON.stringify(variantObj)
-                    body.variants = variants
-                }
-                const check = await searchProductPrintify(product.id, companyShortId)
-                if (check?.length > 1) {
-                    const arr = check.shift()
-                    check.forEach(async (che) => {
-                        await deleteProduct(che?.id)
-                        console.log("duplicate product deleted");
+                const mainProducts = paginated.data
+                await Odoo.connect();
+                for (const product of mainProducts.data) {
+                    const variantObj = {}
+                    product.variants.map((variant) => {
+                        if (variant.is_available) {
+                            variantObj[`${variant.title}`] = variant.id
+                        }
                     })
-                    check.unshift(arr)
-                }
-                if (product.variants[0].is_available === false && check?.length > 0) {
-                    await deleteProduct(check[0]?.id)
-                    console.log("product deleted");
-                } else {
-                    if (check?.length === 0 && product.variants[0].is_available !== false) {
-                        const res = await addProductVariant({ product: body })
-                        console.log("created-->", res, companyShortId)
+                    const category = await feedCategory(product.tags[0], companyLongId)
+                    const qty = await stockQty(product.variants)
+                    const variants = await getVariants(product.variants)
+
+                    const body = {
+                        name: product.title,
+                        category_id: category.toString(),
+                        uom_name: "1",
+                        published: "true",
+                        list_price: (product.variants[0]?.cost / 100).toFixed(2),
+                        description: product.description,
+                        qty: qty,
+                        weight: product.variants[0]?.gram,
+                        images: JSON.stringify(product.images.map((image) => image.src)),
+                        standard_price: (product.variants[0]?.price / 100).toFixed(2),
+                        company_id: companyShortId,
+                        x_printify_id: product.id,
+                        x_printify_variant_id: product.variants[0]?.id,
+                        x_printify_shop_id: product.shop_id.toString()
+                    };
+
+                    if (Object.keys(variantObj).length > 0) {
+                        body.x_printify_variant_id = JSON.stringify(variantObj)
+                        body.variants = variants
+                    }
+                    console.log(body);
+                    const check = await searchProductPrintify(product.id, companyShortId)
+                    if (check?.length > 1) {
+                        const arr = check.shift()
+                        check.forEach(async (che) => {
+                            await deleteProduct(che?.id)
+                            console.log("duplicate product deleted");
+                        })
+                        check.unshift(arr)
+                    }
+                    if (product.variants[0].is_available === false && check?.length > 0) {
+                        await deleteProduct(check[0]?.id)
+                        console.log("product deleted");
                     } else {
-                        await updateProduct({ product: body, productId: check[0]?.id })
+                        if (check?.length === 0 && product.variants[0].is_available !== false) {
+                            const res = await addProductVariant({ product: body })
+                            console.log("created-->", res, companyShortId)
+                        } else {
+                            await updateProduct({ product: body, productId: check[0]?.id })
+                        }
                     }
                 }
             }
