@@ -111,7 +111,7 @@ class PrintifyController {
                         list_price: (product.variants[0]?.cost / 100).toFixed(2),
                         description: product.description,
                         qty: qty,
-                        weight: product.variants[0]?.gram,
+                        weight: product.variants[0]?.grams,
                         images: JSON.stringify(product.images.map((image) => image.src)),
                         standard_price: (product.variants[0]?.price / 100).toFixed(2),
                         company_id: companyShortId,
