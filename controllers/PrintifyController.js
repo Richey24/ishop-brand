@@ -41,6 +41,8 @@ const getVariants = async (variants) => {
                     value: variant.title
                 }]
             }
+        } else {
+            return
         }
     }))
     return res
@@ -79,7 +81,10 @@ class PrintifyController {
         try {
             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6ImEwZjkwMTc2YTg2OWZlNGNmNTkzM2NkNGY4YzJhMWJjYTdkMTE4ZDNkY2FjNzQ5ZDhjZTE3YzYzNjAyOTcwNjlmYTM4MzJkZjcxOWI5YmM4IiwiaWF0IjoxNzExNDk0MTM5LjU0ODkxOCwibmJmIjoxNzExNDk0MTM5LjU0ODkyLCJleHAiOjE3NDMwMzAxMzkuNTQyMDg4LCJzdWIiOiIxNzM1ODA2MCIsInNjb3BlcyI6WyJzaG9wcy5tYW5hZ2UiLCJzaG9wcy5yZWFkIiwiY2F0YWxvZy5yZWFkIiwib3JkZXJzLnJlYWQiLCJvcmRlcnMud3JpdGUiLCJwcm9kdWN0cy5yZWFkIiwicHJvZHVjdHMud3JpdGUiLCJ3ZWJob29rcy5yZWFkIiwid2ViaG9va3Mud3JpdGUiLCJ1cGxvYWRzLnJlYWQiLCJ1cGxvYWRzLndyaXRlIiwicHJpbnRfcHJvdmlkZXJzLnJlYWQiXX0.Agtw2qlnOYSDaPG_CwaQo5q8bLGgJLRSKVjOh4lrsAj50dGH_ldMBFvpE_ujq0EuAdJ5gOdOalw3rZ0-Hnc';
             const products = await this.service.getShopProducts(shopId);
-            for (let i = 1; i <= Math.ceil(products.total / products.to); i++) {
+            console.log(products);
+            console.log(Math.ceil(products.total / products.to));
+            for (let i = 3; i <= Math.ceil(products.total / products.to); i++) {
+                console.log("sad");
                 const paginated = await axios.get(`https://api.printify.com/v1/shops/${shopId}/products.json?page=${i}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -87,7 +92,7 @@ class PrintifyController {
                 })
                 const mainProducts = paginated.data
                 await Odoo.connect();
-                for (const product of mainProducts.data) {
+                for (const product of mainProducts.data.slice(16)) {
                     const variantObj = {}
                     product.variants.map((variant) => {
                         if (variant.is_available) {
@@ -133,7 +138,7 @@ class PrintifyController {
                         await deleteProduct(check[0]?.id)
                         console.log("product deleted");
                     } else {
-                        if (check?.length === 0 && product.variants[0].is_available !== false) {
+                        if (check?.length === 0 && body.variants.length !== 0) {
                             const res = await addProductVariant({ product: body })
                             console.log("created-->", res, companyShortId)
                         } else {
@@ -179,6 +184,10 @@ const runPrintifyDaily = () => {
     cron.schedule("0 21 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15149110", "660ec736880f6552fe3fe6bb", 18)
+    })
+    cron.schedule("0 23 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15308540", "6617047419e2fef9a8d0b58e", 22)
     })
 }
 
