@@ -83,7 +83,7 @@ class PrintifyController {
             const products = await this.service.getShopProducts(shopId);
             console.log(products);
             console.log(Math.ceil(products.total / products.to));
-            for (let i = 3; i <= Math.ceil(products.total / products.to); i++) {
+            for (let i = 1; i <= Math.ceil(products.total / products.to); i++) {
                 console.log("sad");
                 const paginated = await axios.get(`https://api.printify.com/v1/shops/${shopId}/products.json?page=${i}`, {
                     headers: {
