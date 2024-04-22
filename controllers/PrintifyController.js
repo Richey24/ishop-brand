@@ -175,6 +175,10 @@ const runPrintifyDaily = () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("15145610", "660eda16880f6552fe3ff895", 19)
     })
+    cron.schedule("0 17 * * *", () => {
+        console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        printifyCon.fetchProductByShop("15173375", "6621bfd6c933d827cc9c4ef7", 23)
+    })
     cron.schedule("0 18 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
         printifyCon.fetchProductByShop("14761883", "660c3ca14106500891da5954", 5)
