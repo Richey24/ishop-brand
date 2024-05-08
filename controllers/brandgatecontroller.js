@@ -54,7 +54,7 @@ const getVariants = async (variants) => {
 
 const feedProduct = async () => {
     try {
-        for (let i = 34; i < 101; i++) {
+        for (let i = 1; i < 101; i++) {
             const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
                 auth: {
                     username: "info@dreamtechlabs.net",
@@ -70,12 +70,12 @@ const feedProduct = async () => {
                         variantObj[`${variant.attributes[0].option}`] = variant.id
                     }
                 })
-                // const categories = await feedCategory(product.categories[0])
+                const categories = await feedCategory(product.categories[0])
                 const qty = await stockQty(product.variations)
                 const variations = await getVariants(product.variations)
                 const body = {
                     name: product.name,
-                    // category_id: categories.toString(),
+                    category_id: categories.toString(),
                     uom_name: "1",
                     published: "true",
                     list_price: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
