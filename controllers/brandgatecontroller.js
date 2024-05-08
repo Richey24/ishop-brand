@@ -54,7 +54,7 @@ const getVariants = async (variants) => {
 
 const feedProduct = async () => {
     try {
-        for (let i = 18; i < 101; i++) {
+        for (let i = 1; i < 101; i++) {
             const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
                 auth: {
                     username: "info@dreamtechlabs.net",
@@ -70,12 +70,10 @@ const feedProduct = async () => {
                         variantObj[`${variant.attributes[0].option}`] = variant.id
                     }
                 })
-                // const categories = await feedCategory(product.categories[0])
                 const qty = await stockQty(product.variations)
                 const variations = await getVariants(product.variations)
                 const body = {
                     name: product.name,
-                    // category_id: categories.toString(),
                     uom_name: "1",
                     published: "true",
                     list_price: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
@@ -90,11 +88,11 @@ const feedProduct = async () => {
                     brand_gate_id: product.id,
                     x_free_shipping: true
                 };
+                const check = await searchProduct(product.name, 2)
                 if (Object.keys(variantObj).length > 0) {
                     body.brand_gate_variant_id = JSON.stringify(variantObj)
                     body.variants = variations
                 }
-                const check = await searchProduct(product.name, 2)
                 if (check?.length > 1) {
                     const arr = check.shift()
                     check.forEach(async (che) => {
@@ -107,9 +105,12 @@ const feedProduct = async () => {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
+                    body
                     if (check?.length === 0 && product.in_stock !== false) {
-                        // const res = await addProductVariant({ product: body })
-                        // console.log(res);
+                        const categories = await feedCategory(product.categories[0])
+                        body.category_id = categories.toString()
+                        const res = await addProductVariant({ product: body })
+                        console.log(res);
                     } else if (check?.length > 0) {
                         await updateProduct({ product: body, productId: check[0]?.id })
                     }
@@ -124,8 +125,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        feedProduct()
     })
-    feedProduct()
 }
 
 const createOrder = async (req, res) => {
