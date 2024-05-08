@@ -88,6 +88,7 @@ const feedProduct = async () => {
                     standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
                     company_id: 2,
                     brand_gate_id: product.id,
+                    x_free_shipping: true
                 };
                 if (Object.keys(variantObj).length > 0) {
                     body.brand_gate_variant_id = JSON.stringify(variantObj)
@@ -123,8 +124,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
+    feedProduct()
 }
 
 const createOrder = async (req, res) => {
