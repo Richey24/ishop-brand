@@ -70,12 +70,12 @@ const feedProduct = async () => {
                         variantObj[`${variant.attributes[0].option}`] = variant.id
                     }
                 })
-                const categories = await feedCategory(product.categories[0])
+                // const categories = await feedCategory(product.categories[0])
                 const qty = await stockQty(product.variations)
                 const variations = await getVariants(product.variations)
                 const body = {
                     name: product.name,
-                    category_id: categories.toString(),
+                    // category_id: categories.toString(),
                     uom_name: "1",
                     published: "true",
                     list_price: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
@@ -108,8 +108,8 @@ const feedProduct = async () => {
                     console.log("product deleted");
                 } else {
                     if (check?.length === 0 && product.in_stock !== false) {
-                        const res = await addProductVariant({ product: body })
-                        console.log(res);
+                        // const res = await addProductVariant({ product: body })
+                        // console.log(res);
                     } else if (check?.length > 0) {
                         await updateProduct({ product: body, productId: check[0]?.id })
                     }
