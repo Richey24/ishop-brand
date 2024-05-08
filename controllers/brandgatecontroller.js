@@ -70,12 +70,12 @@ const feedProduct = async () => {
                         variantObj[`${variant.attributes[0].option}`] = variant.id
                     }
                 })
-                const categories = await feedCategory(product.categories[0])
+                // const categories = await feedCategory(product.categories[0])
                 const qty = await stockQty(product.variations)
                 const variations = await getVariants(product.variations)
                 const body = {
                     name: product.name,
-                    category_id: categories.toString(),
+                    // category_id: categories.toString(),
                     uom_name: "1",
                     published: "true",
                     list_price: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),

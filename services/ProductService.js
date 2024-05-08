@@ -170,7 +170,7 @@ const updateProduct = async (params) => {
         // Create the product
         const productData = {
             base_unit_count: params.product.qty,
-            public_categ_ids: [+params.product.category_id],
+            // public_categ_ids: [+params.product.category_id],
             list_price: params.product.list_price,
             standard_price: params.product.standard_price,
             name: params.product.name,
@@ -185,7 +185,7 @@ const updateProduct = async (params) => {
             x_color: params.product.color,
             x_subcategory: params.product.subcategory,
             x_size: params.product.size,
-            x_free_shipping: params.product.free_shipping,
+            x_free_shipping: params.product.x_free_shipping,
             x_weight: params.product.weight,
             x_images: params.product.images,
             x_show_sold_count: params?.product.x_show_sold_count,
