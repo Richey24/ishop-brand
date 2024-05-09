@@ -32,7 +32,7 @@ const addProduct = async (params) => {
                 ? JSON.stringify(params?.product?.discount)
                 : null,
             x_shipping_package: params?.product?.x_shipping_package,
-            x_free_shipping: params?.product.free_shipping,
+            x_free_shipping: params.product.x_free_shipping,
             x_brand_gate_id: params?.product.brand_gate_id,
             x_brand_gate_variant_id: params?.product.brand_gate_variant_id,
             x_show_sold_count: params?.product.x_show_sold_count,
@@ -86,7 +86,7 @@ const addProductVariant = async (params) => {
         x_brand_gate_id: params?.product.brand_gate_id,
         x_brand_gate_variant_id: params?.product.brand_gate_variant_id,
         x_shipping_package: JSON?.stringify(params?.product?.x_shipping_package),
-        x_free_shipping: params?.product.free_shipping,
+        x_free_shipping: params.product.x_free_shipping,
         x_show_sold_count: params?.product.x_show_sold_count,
         x_discount: params?.product?.discount
             ? JSON.stringify(params?.product?.discount)
