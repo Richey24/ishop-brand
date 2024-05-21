@@ -182,6 +182,9 @@ const updateProduct = async (params) => {
             product_tag_ids: params.product.product_tag_ids
                 ? JSON.parse(params.product.product_tag_ids)
                 : [],
+            x_discount: params?.product?.discount
+                ? JSON.stringify(params?.product?.discount)
+                : null,
             x_color: params.product.color,
             x_subcategory: params.product.subcategory,
             x_size: params.product.size,

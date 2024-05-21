@@ -52,6 +52,10 @@ const getVariants = async (variants) => {
     return res
 }
 
+const calculateDiscountedPrice = (product) => {
+    return Number((product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString())) + Number((product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString()))
+}
+
 const feedProduct = async () => {
     try {
         for (let i = 1; i < 101; i++) {
@@ -83,10 +87,17 @@ const feedProduct = async () => {
                     size: 1,
                     images: JSON.stringify(product.images.map((image) => image.src)),
                     dimension: product.dimensions?.width + product.dimensions?.height + product.dimensions?.length,
-                    standard_price: product.regular_price ? product.regular_price.toString() : product.variations[0]?.regular_price?.toString(),
+                    standard_price: calculateDiscountedPrice(product) + 20,
                     company_id: 2,
                     brand_gate_id: product.id,
-                    x_free_shipping: true
+                    x_free_shipping: true,
+                    discount: {
+                        amount: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
+                        type: "fixed",
+                        start_date: new Date().toISOString(),
+                        end_date: new Date(new Date().setMonth(new Date().getMonth() + 24)).toISOString(),
+                        discountedAmount: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
+                    },
                 };
                 const check = await searchProduct(product.name, 2)
                 if (Object.keys(variantObj).length > 0) {
@@ -125,8 +136,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
+    feedProduct()
 }
 
 const createOrder = async (req, res) => {
