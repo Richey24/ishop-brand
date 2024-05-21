@@ -92,11 +92,11 @@ const feedProduct = async () => {
                     brand_gate_id: product.id,
                     x_free_shipping: true,
                     discount: {
-                        amount: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
+                        amount: Number((product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString())) + 20,
                         type: "fixed",
                         start_date: new Date().toISOString(),
                         end_date: new Date(new Date().setMonth(new Date().getMonth() + 24)).toISOString(),
-                        discountedAmount: product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString(),
+                        discountedAmount: Number((product.sale_price ? product.sale_price.toString() : product.variations[0]?.sale_price?.toString())) + 20,
                     },
                 };
                 const check = await searchProduct(product.name, 2)
