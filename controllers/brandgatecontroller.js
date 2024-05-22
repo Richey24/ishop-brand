@@ -58,7 +58,7 @@ const calculateDiscountedPrice = (product) => {
 
 const feedProduct = async () => {
     try {
-        for (let i = 10; i < 101; i++) {
+        for (let i = 12; i < 101; i++) {
             const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
                 auth: {
                     username: "info@dreamtechlabs.net",
@@ -116,7 +116,6 @@ const feedProduct = async () => {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
-                    body
                     if (check?.length === 0 && product.in_stock !== false) {
                         const categories = await feedCategory(product.categories[0])
                         body.category_id = categories.toString()
