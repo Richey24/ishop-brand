@@ -112,11 +112,11 @@ const feedProduct = async () => {
                     })
                     check.unshift(arr)
                 }
-                if (product.in_stock === false && check?.length > 0) {
+                if ((product.in_stock === false && check?.length > 0) || (product.images.length <= 0 && check?.length > 0)) {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
-                    if (check?.length === 0 && product.in_stock !== false) {
+                    if (check?.length === 0 && product.in_stock !== false && product.images.length > 0) {
                         const categories = await feedCategory(product.categories[0])
                         body.category_id = categories.toString()
                         const res = await addProductVariant({ product: body })
