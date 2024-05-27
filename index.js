@@ -9,13 +9,9 @@ const brandgaterouter = require("./routes/brandgaterouter");
 const productsRoutes = require("./routes/ProductRoutes");
 const { runPrintifyDaily } = require("./controllers/PrintifyController");
 const orderProduct = require("./controllers/orderProduct");
+const fetchALiExpressProducts = require("./controllers/aliexpress");
+const runAliExpressDaily = require("./controllers/aliexpress");
 const app = express();
-const crypto = require("crypto")
-
-const inputString = 'app_key507142category_id200000345feed_nameDS_Italy_fastdelivery+20231123methodaliexpress.ds.recommend.feed.getpage_no2page_size100sign_methodsha256sortpriceAsctarget_currencyUSDtarget_languageENtimestamp1716315338540';
-const hash = crypto.createHmac('sha256', "EsFpY0hPU6YVVMIPR1WqdfckfwEEQXPh").update(inputString).digest('hex').toUpperCase();
-
-console.log(hash);
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +25,7 @@ app.use(
 );
 app.use(morgan("dev")); // configire morgan
 
+
 mongoose
     .connect(process.env.MONGO_URL, { useNewUrlParser: true })
     .then(() => {
@@ -40,6 +37,7 @@ mongoose
 
 runFeedProductDaily()
 runPrintifyDaily()
+// runAliExpressDaily()
 
 app.get("/", (req, res) => {
     console.log("Hello MEVN Soldier");

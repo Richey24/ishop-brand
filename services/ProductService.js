@@ -271,8 +271,6 @@ const createCategory = async (name, company_id) => {
 }
 
 const getVariant = async (num) => {
-
-
     const attributeValues = await Odoo.execute_kw("product.attribute.value", "search_read", [
         [["attribute_id", "=", num]],
         ["name", "display_name", "attribute_id"],
@@ -317,6 +315,24 @@ const searchProductPrintify = async (id, company_id) => {
     return products;
 }
 
+const searchProducAli = async (id, company_id) => {
+
+    const products = await Odoo.execute_kw(
+        "product.template",
+        "search_read",
+        [[
+            ["x_aliexpress_id", "ilike", id],
+            ["company_id", "ilike", company_id]
+        ]],
+        [
+            "id",
+            "name",
+        ],
+        {},
+    );
+    return products;
+}
+
 module.exports = {
     addProduct,
     addProductVariant,
@@ -326,5 +342,6 @@ module.exports = {
     createCategory,
     getVariant,
     searchProduct,
-    searchProductPrintify
+    searchProductPrintify,
+    searchProducAli
 }

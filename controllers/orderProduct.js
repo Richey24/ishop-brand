@@ -14,7 +14,7 @@ const orderProduct = async (req, res) => {
         event = stripe.webhooks.constructEvent(
             payload,
             sig,
-            process.env.PRIVATE_SITE_STRIPE_SECRET,
+            process.env.DROPSHIPPING_SECRET,
         );
     } catch (err) {
         console.log(err);
