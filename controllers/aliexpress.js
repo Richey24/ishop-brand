@@ -114,7 +114,7 @@ const fetchALiExpressProducts = async () => {
                     uom_name: "1",
                     published: "true",
                     list_price: Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price),
-                    description: productDetails.ae_item_base_info_dto.mobile_detail,
+                    description: productDetails.ae_item_base_info_dto.detail,
                     qty: product.lastest_volume,
                     weight: productDetails.package_info_dto.gross_weight,
                     images: JSON.stringify(product.product_small_image_urls.productSmallImageUrl),
