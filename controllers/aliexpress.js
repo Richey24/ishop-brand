@@ -105,7 +105,7 @@ const fetchALiExpressProducts = async () => {
                         variantObj[`${title}`] = variant.sku_attr
                     }
                 })
-                const category = await feedCategory(product.second_level_category_name, "6654b9791b9129541b949a70")
+                const category = await feedCategory(product.second_level_category_name, "66552b3a3db4bb153f409eb8")
                 const variants = await getVariants(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o)
 
                 const body = {
@@ -114,12 +114,12 @@ const fetchALiExpressProducts = async () => {
                     uom_name: "1",
                     published: "true",
                     list_price: Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price),
-                    description: productDetails.ae_item_base_info_dto.detail,
+                    description: productDetails.ae_item_base_info_dto.mobile_detail,
                     qty: product.lastest_volume,
                     weight: productDetails.package_info_dto.gross_weight,
                     images: JSON.stringify(product.product_small_image_urls.productSmallImageUrl),
-                    standard_price: (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.35).toFixed(2),
-                    company_id: 327,
+                    standard_price: (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) + (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.2) * 1.35).toFixed(2),
+                    company_id: 48,
                     x_aliexpress_id: product.product_id,
                     x_free_shipping: true,
                     discount: {
@@ -135,8 +135,8 @@ const fetchALiExpressProducts = async () => {
                     body.x_aliexpress_variant_id = JSON.stringify(variantObj)
                     body.variants = variants
                 }
-                console.log(body);
-                const check = await searchProducAli(product.id, "")
+
+                const check = await searchProducAli(product.product_id, 48)
                 if (check?.length > 1) {
                     const arr = check.shift()
                     check.forEach(async (che) => {
@@ -145,7 +145,7 @@ const fetchALiExpressProducts = async () => {
                     })
                     check.unshift(arr)
                 }
-                if (product.variants[0].is_available === false && check?.length > 0) {
+                if (productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o.sku_stock === false && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {

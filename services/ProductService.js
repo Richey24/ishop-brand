@@ -94,6 +94,8 @@ const addProductVariant = async (params) => {
         x_printify_id: params?.product.x_printify_id,
         x_printify_variant_id: params?.product.x_printify_variant_id,
         x_printify_shop_id: params?.product.x_printify_shop_id,
+        x_aliexpress_id: params?.product.x_aliexpress_id,
+        x_aliexpress_variant_id: params?.product.x_aliexpress_variant_id,
         product_tag_ids: params.product.product_tag_ids
             ? JSON.parse(params.product.product_tag_ids)
             : [],

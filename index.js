@@ -37,7 +37,7 @@ mongoose
 
 runFeedProductDaily()
 runPrintifyDaily()
-// runAliExpressDaily()
+runAliExpressDaily()
 
 app.get("/", (req, res) => {
     console.log("Hello MEVN Soldier");
