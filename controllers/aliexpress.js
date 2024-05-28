@@ -69,7 +69,7 @@ const fetchALiExpressProducts = async () => {
         const aliproducts = await axios.get(`https://api-sg.aliexpress.com/sync?category_id=${alidata.category}&target_currency=USD&page_no=1&feed_name=${alidata.path}&method=aliexpress.ds.recommend.feed.get&app_key=507142&sign_method=sha256&timestamp=${timestamp}&sign=${hash}`)
         const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
         await Odoo.connect();
-        for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
+        for (let i = 2; i < Math.ceil(totalCount / 60); i++) {
             const timestamp = Date.now()
             const hash = signApiRequest({
                 app_key: 507142,
@@ -96,6 +96,9 @@ const fetchALiExpressProducts = async () => {
                     sign_method: "sha256"
                 }, "EsFpY0hPU6YVVMIPR1WqdfckfwEEQXPh", "sha256", "");
                 const result = await axios.get(`https://api-sg.aliexpress.com/sync?target_currency=USD&product_id=${product.product_id}&ship_to_country=US&method=aliexpress.ds.product.get&app_key=507142&sign_method=sha256&timestamp=${timestamp}&sign=${hash}`)
+
+                if (result.data.aliexpress_ds_product_get_response.rsp_code !== 200) continue
+
                 const productDetails = result.data.aliexpress_ds_product_get_response.result
 
                 const variantObj = {}
