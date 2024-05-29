@@ -35,6 +35,12 @@ const aliDatas = [
         feed: "DS_Australia_fastdelivery 20231123",
         path: "DS_Australia_fastdelivery+20231123"
     },
+    {
+        // first aid
+        category: 30,
+        feed: "DS_Australia_fastdelivery 20231123",
+        path: "DS_Australia_fastdelivery+20231123"
+    },
 ]
 
 module.exports = aliDatas

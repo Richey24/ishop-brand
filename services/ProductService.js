@@ -233,14 +233,12 @@ const deleteProduct = async (id) => {
 };
 
 const getComapnyCategoriesByName = async (name, company_id) => {
-
-    const company = await Company.findById(company_id);
     let categories = await Odoo.execute_kw(
         "product.public.category",
         "search_read",
         [
             [
-                ["id", "in", company.categories]
+                ["name", "=", name]
             ],
             [
                 "id",
@@ -253,8 +251,7 @@ const getComapnyCategoriesByName = async (name, company_id) => {
         },
     );
 
-    const category = categories.find((cat) => cat.name === name)
-    return category
+    return categories.length === 0 ? undefined : categories[0]
 }
 
 const createCategory = async (name, company_id) => {
