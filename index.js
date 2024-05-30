@@ -11,6 +11,8 @@ const { runPrintifyDaily } = require("./controllers/PrintifyController");
 const orderProduct = require("./controllers/orderProduct");
 const fetchALiExpressProducts = require("./controllers/aliexpress");
 const runAliExpressDaily = require("./controllers/aliexpress");
+const { default: axios } = require("axios");
+const signApiRequest = require("./services/Hashing");
 const app = express();
 
 app.use(cors());

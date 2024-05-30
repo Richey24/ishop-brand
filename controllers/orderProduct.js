@@ -122,6 +122,60 @@ const orderProduct = async (req, res) => {
                         res.status(200).json({ message: "Order created on printify" })
                     }
                 }
+                if (brand.x_aliexpress_id) {
+                    const lineItems = await Promise.all(theOrder.map(async (item) => {
+                        const product = await axios.get(`https://market-server.azurewebsites.net/api/products/details/${item.product_template_id[0]}`)
+                        const pro = product.data.product[0]
+                        return {
+                            "product_id": pro.x_aliexpress_id,
+                            "sku_attr": JSON.parse(pro.x_aliexpress_variant_id)[JSON.parse(item.x_variant)[0].name],
+                            "product_count": item.product_uom_qty,
+                            "logistics_service_name": "EPAM",
+                        }
+                    }))
+                    const theAddress = await axios.post(`https://market-server.azurewebsites.net/api/orders/address/get`, {
+                        partnerID: order.data.order[0]?.partner_id[0],
+                        addressID: order.data.order[0]?.partner_shipping_id[0]
+                    })
+                    const address = theAddress.data
+
+                    if (address.state_id) {
+                        const countryCode = address.state_id[1].substring(address.state_id[1].indexOf("(") + 1, address.state_id[1].lastIndexOf(")"))
+                        const timestamp = Date.now()
+                        const param = `
+                                {
+                                    "product_items": ${lineItems},
+                                    "logistics_address":{
+                                        "zip":"${address.zip}",
+                                        "country":"${countryCode}",
+                                        "mobile_no":"${address.phone}",
+                                        "address":"${address.street}",
+                                        "city":"${address.city}",
+                                        "contact_person":"${address.name.split(" ")[0]} ${address.name.split(" ")[1]}",
+                                        "full_name":"${address.name.split(" ")[0]} ${address.name.split(" ")[1]}",
+                                        "province":"${address.state_id[1]}",
+                                        "phone_country":"+1"
+                                    }
+                                }
+                            `
+                        const encodedString = encodeURIComponent(param)
+
+                        const hash = signApiRequest({
+                            app_key: 507142,
+                            timestamp: timestamp,
+                            session: "50000500439znZZZqMmSikCpwNpCD3JXcnyazsedEauiLSUkKmW1d304ad4t7TOPbrgF",
+                            method: "aliexpress.ds.order.create",
+                            sign_method: "sha256",
+                            param_place_order_request4_open_api_d_t_o: param
+                        }, "EsFpY0hPU6YVVMIPR1WqdfckfwEEQXPh", "sha256", "")
+
+                        await axios.post(`https://api-sg.aliexpress.com/sync?param_place_order_request4_open_api_d_t_o=${encodedString}&method=aliexpress.ds.order.create&app_key=507142&sign_method=sha256&session=50000500439znZZZqMmSikCpwNpCD3JXcnyazsedEauiLSUkKmW1d304ad4t7TOPbrgF&timestamp=${timestamp}&sign=${hash}`)
+
+                        res.status(200).json({ message: "Order created on aliexpress" })
+
+                    }
+                }
+
             }
             break;
         default:
