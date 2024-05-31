@@ -68,6 +68,7 @@ const feedProduct = async () => {
             await Odoo.connect();
             const products = response.data
             for (const product of products) {
+                if (product.regular_price <= 0 && product.variations[0]?.regular_price <= 0) continue
                 const variantObj = {}
                 product.variations.map((variant) => {
                     if (variant.in_stock) {
@@ -135,8 +136,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
+    feedProduct()
 }
 
 const createOrder = async (req, res) => {
