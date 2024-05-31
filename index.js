@@ -13,6 +13,7 @@ const fetchALiExpressProducts = require("./controllers/aliexpress");
 const runAliExpressDaily = require("./controllers/aliexpress");
 const { default: axios } = require("axios");
 const signApiRequest = require("./services/Hashing");
+const Noti = require("./model/noti");
 const app = express();
 
 app.use(cors());
@@ -49,6 +50,41 @@ app.get("/", (req, res) => {
 app.use("/api/brandgate", brandgaterouter)
 app.use("/api/printify", productsRoutes);
 app.post("/api/webhook", orderProduct)
+
+app.post("/api/noti", async (req, res) => {
+    try {
+        const body = req.body
+        if (!body) {
+            return res.status(400).json({ message: "send endpoint object" })
+        }
+        await Noti.create(body)
+        res.status(200).json({ message: "created" })
+    } catch (error) {
+        res.status(500).json({ message: "error occured" })
+    }
+})
+
+app.post("/api/noti/:id", async (req, res) => {
+    try {
+        const id = req.params.id
+        if (!id) {
+            return res.status(400).json({ message: "send endpoint object" })
+        }
+        await Noti.findByIdAndDelete(id)
+        res.status(200).json({ message: "deleted" })
+    } catch (error) {
+        res.status(500).json({ message: "error occured" })
+    }
+})
+
+app.get("/api/noti", async (req, res) => {
+    try {
+        const noti = await Noti.find({})
+        res.status(200).json(noti)
+    } catch (error) {
+        res.status(500).json({ message: "error occured" })
+    }
+})
 
 app.listen(PORT, () => {
     console.log(`App is running on ${PORT}`);
