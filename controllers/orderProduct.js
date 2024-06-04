@@ -39,7 +39,7 @@ const orderProduct = async (req, res) => {
                         if (pro.x_brand_gate_variant_id) {
                             return {
                                 product_id: pro.x_brand_gate_id,
-                                variation_id: JSON.parse(pro.x_brand_gate_variant_id)[JSON.parse(item.x_variant)[0].name],
+                                variation_id: JSON.parse(pro.x_brand_gate_variant_id)[JSON.parse(item.x_variant).product_template_value_ids_data[0][0]?.name],
                                 quantity: item.product_uom_qty
                             }
                         } else {
@@ -83,7 +83,7 @@ const orderProduct = async (req, res) => {
                         const pro = product.data.product[0]
                         return {
                             product_id: pro.x_printify_id,
-                            variant_id: JSON.parse(pro.x_printify_variant_id)[JSON.parse(item.x_variant)[0].name],
+                            variant_id: JSON.parse(pro.x_printify_variant_id)[JSON.parse(item.x_variant).product_template_value_ids_data[0][0]?.name],
                             quantity: item.product_uom_qty
                         }
                     }))
@@ -128,7 +128,7 @@ const orderProduct = async (req, res) => {
                         const pro = product.data.product[0]
                         return {
                             "product_id": pro.x_aliexpress_id,
-                            "sku_attr": JSON.parse(pro.x_aliexpress_variant_id)[JSON.parse(item.x_variant)[0].name],
+                            "sku_attr": JSON.parse(pro.x_aliexpress_variant_id)[JSON.parse(item.x_variant).product_template_value_ids_data[0][0]?.name],
                             "product_count": item.product_uom_qty,
                             "logistics_service_name": "EPAM",
                         }

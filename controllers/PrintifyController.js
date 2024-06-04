@@ -194,72 +194,72 @@ const runPrintifyDaily = () => {
 }
 
 const getShippingRates = async (req, res) => {
-    // try {
-    const id = req.params.id
-    if (!id) {
-        return res.status(400).json({ message: "Send order id" })
-    }
-    const order = await axios.get(`https://market-server.azurewebsites.net/api/orders/${id}`)
-    const theOrder = order.data.order[0].order_lines
-    const checkBrand = await axios.get(`https://market-server.azurewebsites.net/api/products/details/${theOrder[0].product_template_id[0]}`)
-    const brand = checkBrand.data.product[0]
-    if (brand.x_printify_id) {
-        const lineItems = await Promise.all(theOrder.map(async (item) => {
-            const product = await axios.get(`https://market-server.azurewebsites.net/api/products/details/${item.product_template_id[0]}`)
-            const pro = product.data.product[0]
-            return {
-                product_id: pro.x_printify_id,
-                variant_id: JSON.parse(pro.x_printify_variant_id)[JSON.parse(item.x_variant)[0]?.name],
-                quantity: item.product_uom_qty
-            }
-        }))
-        const theAddress = await axios.post(`https://market-server.azurewebsites.net/api/orders/address/get`, {
-            partnerID: order.data.order[0]?.partner_id[0],
-            addressID: order.data.order[0]?.partner_shipping_id[0]
-        })
-        const address = theAddress.data
-        if (address.state_id) {
-            const countryCode = address.state_id[1].substring(address.state_id[1].indexOf("(") + 1, address.state_id[1].lastIndexOf(")"))
-            const body = {
-                line_items: lineItems,
-                address_to: {
-                    first_name: address.name.split(" ")[0],
-                    last_name: address.name.split(" ")[1],
-                    address1: address.street,
-                    city: address.city,
-                    region: address.state_id[1],
-                    zip: address.zip,
-                    country: countryCode,
-                    phone: address.phone,
-                    email: address.email
-                }
-            }
-            const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6ImEwZjkwMTc2YTg2OWZlNGNmNTkzM2NkNGY4YzJhMWJjYTdkMTE4ZDNkY2FjNzQ5ZDhjZTE3YzYzNjAyOTcwNjlmYTM4MzJkZjcxOWI5YmM4IiwiaWF0IjoxNzExNDk0MTM5LjU0ODkxOCwibmJmIjoxNzExNDk0MTM5LjU0ODkyLCJleHAiOjE3NDMwMzAxMzkuNTQyMDg4LCJzdWIiOiIxNzM1ODA2MCIsInNjb3BlcyI6WyJzaG9wcy5tYW5hZ2UiLCJzaG9wcy5yZWFkIiwiY2F0YWxvZy5yZWFkIiwib3JkZXJzLnJlYWQiLCJvcmRlcnMud3JpdGUiLCJwcm9kdWN0cy5yZWFkIiwicHJvZHVjdHMud3JpdGUiLCJ3ZWJob29rcy5yZWFkIiwid2ViaG9va3Mud3JpdGUiLCJ1cGxvYWRzLnJlYWQiLCJ1cGxvYWRzLndyaXRlIiwicHJpbnRfcHJvdmlkZXJzLnJlYWQiXX0.Agtw2qlnOYSDaPG_CwaQo5q8bLGgJLRSKVjOh4lrsAj50dGH_ldMBFvpE_ujq0EuAdJ5gOdOalw3rZ0-Hnc';
-            const rates = await axios.post(`https://api.printify.com/v1/shops/${brand.x_printify_shop_id}/orders/shipping.json`, body, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            const keys = Object.keys(rates.data)
-            const obj = keys.map((key, i) => {
+    try {
+        const id = req.params.id
+        if (!id) {
+            return res.status(400).json({ message: "Send order id" })
+        }
+        const order = await axios.get(`https://market-server.azurewebsites.net/api/orders/${id}`)
+        const theOrder = order.data.order[0].order_lines
+        const checkBrand = await axios.get(`https://market-server.azurewebsites.net/api/products/details/${theOrder[0].product_template_id[0]}`)
+        const brand = checkBrand.data.product[0]
+        if (brand.x_printify_id) {
+            const lineItems = await Promise.all(theOrder.map(async (item) => {
+                const product = await axios.get(`https://market-server.azurewebsites.net/api/products/details/${item.product_template_id[0]}`)
+                const pro = product.data.product[0]
                 return {
-                    rate_id: i,
-                    service_type: key,
-                    shipping_amount: {
-                        amount: (rates.data[key] / 100).toFixed(2)
+                    product_id: pro.x_printify_id,
+                    variant_id: JSON.parse(pro.x_printify_variant_id)[JSON.parse(item.x_variant).product_template_value_ids_data[0][0]?.name],
+                    quantity: item.product_uom_qty
+                }
+            }))
+            const theAddress = await axios.post(`https://market-server.azurewebsites.net/api/orders/address/get`, {
+                partnerID: order.data.order[0]?.partner_id[0],
+                addressID: order.data.order[0]?.partner_shipping_id[0]
+            })
+            const address = theAddress.data
+            if (address.state_id) {
+                const countryCode = address.state_id[1].substring(address.state_id[1].indexOf("(") + 1, address.state_id[1].lastIndexOf(")"))
+                const body = {
+                    line_items: lineItems,
+                    address_to: {
+                        first_name: address.name.split(" ")[0],
+                        last_name: address.name.split(" ")[1],
+                        address1: address.street,
+                        city: address.city,
+                        region: address.state_id[1],
+                        zip: address.zip,
+                        country: countryCode,
+                        phone: address.phone,
+                        email: address.email
                     }
                 }
-            })
-            res.status(200).json({ rate_response: { rates: obj } })
+                const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzN2Q0YmQzMDM1ZmUxMWU5YTgwM2FiN2VlYjNjY2M5NyIsImp0aSI6ImEwZjkwMTc2YTg2OWZlNGNmNTkzM2NkNGY4YzJhMWJjYTdkMTE4ZDNkY2FjNzQ5ZDhjZTE3YzYzNjAyOTcwNjlmYTM4MzJkZjcxOWI5YmM4IiwiaWF0IjoxNzExNDk0MTM5LjU0ODkxOCwibmJmIjoxNzExNDk0MTM5LjU0ODkyLCJleHAiOjE3NDMwMzAxMzkuNTQyMDg4LCJzdWIiOiIxNzM1ODA2MCIsInNjb3BlcyI6WyJzaG9wcy5tYW5hZ2UiLCJzaG9wcy5yZWFkIiwiY2F0YWxvZy5yZWFkIiwib3JkZXJzLnJlYWQiLCJvcmRlcnMud3JpdGUiLCJwcm9kdWN0cy5yZWFkIiwicHJvZHVjdHMud3JpdGUiLCJ3ZWJob29rcy5yZWFkIiwid2ViaG9va3Mud3JpdGUiLCJ1cGxvYWRzLnJlYWQiLCJ1cGxvYWRzLndyaXRlIiwicHJpbnRfcHJvdmlkZXJzLnJlYWQiXX0.Agtw2qlnOYSDaPG_CwaQo5q8bLGgJLRSKVjOh4lrsAj50dGH_ldMBFvpE_ujq0EuAdJ5gOdOalw3rZ0-Hnc';
+                const rates = await axios.post(`https://api.printify.com/v1/shops/${brand.x_printify_shop_id}/orders/shipping.json`, body, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                const keys = Object.keys(rates.data)
+                const obj = keys.map((key, i) => {
+                    return {
+                        rate_id: i,
+                        service_type: key,
+                        shipping_amount: {
+                            amount: (rates.data[key] / 100).toFixed(2)
+                        }
+                    }
+                })
+                res.status(200).json({ rate_response: { rates: obj } })
+            } else {
+                return res.status(400).json({ message: "State not recognized" })
+            }
         } else {
-            return res.status(400).json({ message: "State not recognized" })
+            return res.status(400).json({ message: "Not a printify order" })
         }
-    } else {
-        return res.status(400).json({ message: "Not a printify order" })
+    } catch (error) {
+        res.status(500).json(error)
     }
-    // } catch (error) {
-    //     res.status(500).json(error)
-    // }
 }
 
 module.exports = {
