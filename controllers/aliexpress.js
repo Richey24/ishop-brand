@@ -167,8 +167,8 @@ const fetchALiExpressProducts = async () => {
 const runAliExpressDaily = () => {
     cron.schedule("0 10 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        fetchALiExpressProducts()
     })
-    fetchALiExpressProducts()
 }
 
 
