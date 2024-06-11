@@ -5,14 +5,10 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { runFeedProductDaily } = require("./controllers/brandgatecontroller");
-const brandgaterouter = require("./routes/brandgaterouter");
 const productsRoutes = require("./routes/ProductRoutes");
 const { runPrintifyDaily } = require("./controllers/PrintifyController");
 const orderProduct = require("./controllers/orderProduct");
-const fetchALiExpressProducts = require("./controllers/aliexpress");
 const runAliExpressDaily = require("./controllers/aliexpress");
-const { default: axios } = require("axios");
-const signApiRequest = require("./services/Hashing");
 const Noti = require("./model/noti");
 const app = express();
 
@@ -47,7 +43,6 @@ app.get("/", (req, res) => {
     res.status(201).json({ message: "working" });
 });
 
-app.use("/api/brandgate", brandgaterouter)
 app.use("/api/printify", productsRoutes);
 app.post("/api/webhook", orderProduct)
 

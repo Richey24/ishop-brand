@@ -140,25 +140,6 @@ const runFeedProductDaily = () => {
     })
 }
 
-const createOrder = async (req, res) => {
-    try {
-        if (!req.body) {
-            return res.status(400).json({ message: "send order body" })
-        }
-        await axios.post("https://nova.shopwoo.com/api/v1/orders?store_id=2", req.body, {
-            auth: {
-                username: "info@dreamtechlabs.net",
-                password: "Aim4$ucce$$"
-            }
-        })
-        res.status(200).json({ message: "order created on brandgateway" })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error })
-    }
-}
-
 module.exports = {
-    runFeedProductDaily,
-    createOrder
+    runFeedProductDaily
 }
