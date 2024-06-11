@@ -136,8 +136,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        feedProduct()
     })
-    feedProduct()
 }
 
 module.exports = {
