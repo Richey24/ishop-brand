@@ -61,8 +61,8 @@ const feedProduct = async () => {
         for (let i = 1; i < 101; i++) {
             const response = await axios.get(`https://nova.shopwoo.com/api/v1/products?store_id=2&page=${i}&per_page=100&lang=en`, {
                 auth: {
-                    username: "info@dreamtechlabs.net",
-                    password: "Aim4$ucce$$"
+                    username: "info@ishop.black",
+                    password: "Hab0glab0tribin"
                 }
             })
             await Odoo.connect();
@@ -136,8 +136,8 @@ const feedProduct = async () => {
 const runFeedProductDaily = () => {
     cron.schedule("0 0 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        feedProduct()
     })
+    feedProduct()
 }
 
 module.exports = {
