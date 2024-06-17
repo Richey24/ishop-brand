@@ -24,28 +24,17 @@ const stockQty = async (variants) => {
 }
 
 const getVariants = async (variants) => {
-    const checkVar = await getVariant(4)
     const res = await Promise.all(variants.map(async (variant) => {
         if (variant.is_available) {
-            const varia = checkVar.find((val) => val.name === variant.title)
-            if (varia) {
-                return [{
-                    attributeId: 4,
-                    price_extra: ((variant.price - variants[0]?.price) / 100).toFixed(2),
-                    valueId: varia.id
-                }]
-            } else {
-                return [{
-                    attributeId: 4,
-                    price_extra: ((variant.price - variants[0]?.price) / 100).toFixed(2),
-                    value: variant.title
-                }]
+            return {
+                attributeId: "Option",
+                price_extra: ((variant.price - variants[0]?.price) / 100).toFixed(2),
+                value: variant.title,
+                quantity: 10
             }
-        } else {
-            return
         }
     }))
-    return res
+    return [res.filter((el) => el !== undefined)]
 }
 
 class PrintifyController {

@@ -1,11 +1,11 @@
 const aliDatas = [
-    // {
-    //     // clothes
-    //     // 5535
-    //     category: 200000345,
-    //     feed: "DS_Australia_fastdelivery 20231123",
-    //     path: "DS_Australia_fastdelivery+20231123"
-    // },
+    {
+        // clothes
+        // 5535
+        category: 200000345,
+        feed: "DS_Australia_fastdelivery 20231123",
+        path: "DS_Australia_fastdelivery+20231123"
+    },
     {
         // hats, gloves, sunglasses, tie and cap
         // 7119

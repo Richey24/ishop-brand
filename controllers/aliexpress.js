@@ -25,29 +25,18 @@ const getVariantName = (variants) => {
 }
 
 const getVariants = async (variants) => {
-    const checkVar = await getVariant(4)
     const res = await Promise.all(variants.map(async (variant) => {
         if (variant.sku_stock) {
             const title = getVariantName(variant.ae_sku_property_dtos.ae_sku_property_d_t_o)
-            const varia = checkVar.find((val) => val.name === title)
-            if (varia) {
-                return [{
-                    attributeId: 4,
-                    price_extra: (variant.sku_price - variants[0]?.sku_price),
-                    valueId: varia.id
-                }]
-            } else {
-                return [{
-                    attributeId: 4,
-                    price_extra: (variant.sku_price - variants[0]?.sku_price),
-                    value: title
-                }]
+            return {
+                attributeId: "Option",
+                price_extra: (variant.sku_price - variants[0]?.sku_price),
+                value: title,
+                quantity: 10
             }
-        } else {
-            return
         }
     }))
-    return res
+    return [res.filter((el) => el !== undefined)]
 }
 
 
@@ -68,7 +57,7 @@ const fetchALiExpressProducts = async () => {
         const aliproducts = await axios.get(`https://api-sg.aliexpress.com/sync?category_id=${alidata.category}&target_currency=USD&page_no=1&feed_name=${alidata.path}&method=aliexpress.ds.recommend.feed.get&app_key=507142&sign_method=sha256&timestamp=${timestamp}&sign=${hash}`)
         const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
         await Odoo.connect();
-        for (let i = 10; i < Math.ceil(totalCount / 60); i++) {
+        for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
             const timestamp = Date.now()
             const hash = signApiRequest({
                 app_key: 507142,
@@ -167,8 +156,8 @@ const fetchALiExpressProducts = async () => {
 const runAliExpressDaily = () => {
     cron.schedule("0 10 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        fetchALiExpressProducts()
     })
-    fetchALiExpressProducts()
 }
 
 

@@ -32,24 +32,15 @@ const stockQty = async (variants) => {
 const getVariants = async (variants) => {
     const res = await Promise.all(variants.map(async (variant) => {
         if (variant.in_stock) {
-            const checkVar = await getVariant(2)
-            const varia = checkVar.find((val) => val.name === variant.attributes[0].option)
-            if (varia) {
-                return [{
-                    attributeId: 2,
-                    price_extra: variant.regular_price - variants[0].regular_price,
-                    valueId: varia.id
-                }]
-            } else {
-                return [{
-                    attributeId: 2,
-                    price_extra: variant.regular_price - variants[0].regular_price,
-                    value: variant.attributes[0].option
-                }]
+            return {
+                attributeId: "Option",
+                price_extra: variant.regular_price - variants[0].regular_price,
+                value: variant.attributes[0].option,
+                quantity: 10
             }
         }
     }))
-    return res
+    return [res.filter((el) => el !== undefined)]
 }
 
 const calculateDiscountedPrice = (product) => {
