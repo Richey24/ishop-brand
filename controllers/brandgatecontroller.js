@@ -7,8 +7,8 @@ const feedCategory = async (category) => {
     let theCat;
     const response = await axios.get(`https://nova.shopwoo.com/api/v1/categories/${category}?store_id=2&lang=en`, {
         auth: {
-            username: "info@dreamtechlabs.net",
-            password: "Aim4$ucce$$"
+            username: "info@ishop.black",
+            password: "Hab0glab0tribin"
         }
     })
     const cat = response.data
