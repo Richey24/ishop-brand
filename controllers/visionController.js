@@ -2,7 +2,7 @@ const { default: axios } = require('axios');
 const Odoo = require("../odoo");
 const cron = require("node-cron");
 const visionCat = require('../services/VisionCat');
-const { getComapnyCategoriesByName, createCategory, searchProducAli, addProductVariant, updateProduct, deleteProduct } = require('../services/ProductService');
+const { getComapnyCategoriesByName, createCategory, addProductVariant, updateProduct, deleteProduct, searchProductVision } = require('../services/ProductService');
 
 
 const feedCategory = async (category, companyLongId) => {
@@ -66,7 +66,7 @@ const fetchVisionProduct = async () => {
                     x_free_shipping: false,
                 };
 
-                const check = await searchProducAli(product.product_id, 119)
+                const check = await searchProductVision(product.product_id, 119)
 
                 if (product.status === "Out of Stock" && check?.length === 0) continue
 

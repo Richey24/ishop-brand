@@ -100,6 +100,8 @@ const addProductVariant = async (params) => {
         x_printify_shop_id: params?.product.x_printify_shop_id,
         x_aliexpress_id: params?.product.x_aliexpress_id,
         x_aliexpress_variant_id: params?.product.x_aliexpress_variant_id,
+        x_vision_id: params?.product.x_vision_id,
+        x_vision_model: params?.product.x_vision_model,
         product_tag_ids: params.product.product_tag_ids
             ? JSON.parse(params.product.product_tag_ids)
             : [],
@@ -209,6 +211,10 @@ const updateProduct = async (params) => {
             x_printify_id: params?.product.x_printify_id,
             x_printify_variant_id: params?.product.x_printify_variant_id,
             x_printify_shop_id: params?.product.x_printify_shop_id,
+            x_aliexpress_id: params?.product.x_aliexpress_id,
+            x_aliexpress_variant_id: params?.product.x_aliexpress_variant_id,
+            x_vision_id: params?.product.x_vision_id,
+            x_vision_model: params?.product.x_vision_model,
             x_variants:
                 params?.product?.variants && params?.product?.variants.length > 0
                     ? JSON.stringify(params?.product?.variants)
@@ -346,7 +352,6 @@ const searchProducAli = async (id, company_id) => {
 }
 
 const searchProductVision = async (id, company_id) => {
-
     const products = await Odoo.execute_kw(
         "product.template",
         "search_read",
