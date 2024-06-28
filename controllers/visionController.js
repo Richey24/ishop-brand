@@ -67,10 +67,11 @@ const fetchVisionProduct = async () => {
                 };
 
                 const check = await searchProductVision(product.product_id, 119)
+                const checkImage = await axios.get(product.main_picture)
+                console.log(checkImage.status);
+                if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length === 0) continue
 
-                if (product.status === "Out of Stock" && check?.length === 0) continue
-
-                if (product.status === "Out of Stock" && check?.length > 0) {
+                if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length > 0) {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
