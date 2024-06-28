@@ -345,6 +345,24 @@ const searchProducAli = async (id, company_id) => {
     return products;
 }
 
+const searchProductVision = async (id, company_id) => {
+
+    const products = await Odoo.execute_kw(
+        "product.template",
+        "search_read",
+        [[
+            ["x_vision_id", "ilike", id],
+            ["company_id", "ilike", company_id]
+        ]],
+        [
+            "id",
+            "name",
+        ],
+        {},
+    );
+    return products;
+}
+
 module.exports = {
     addProduct,
     addProductVariant,
@@ -355,5 +373,6 @@ module.exports = {
     getVariant,
     searchProduct,
     searchProductPrintify,
-    searchProducAli
+    searchProducAli,
+    searchProductVision
 }

@@ -10,6 +10,7 @@ const { runPrintifyDaily } = require("./controllers/PrintifyController");
 const orderProduct = require("./controllers/orderProduct");
 const runAliExpressDaily = require("./controllers/aliexpress");
 const Noti = require("./model/noti");
+const runVisionDaily = require("./controllers/visionController");
 const app = express();
 
 app.use(cors());
@@ -37,6 +38,7 @@ mongoose
 runFeedProductDaily()
 runPrintifyDaily()
 runAliExpressDaily()
+runVisionDaily()
 
 app.get("/", (req, res) => {
     console.log("Hello MEVN Soldier");
