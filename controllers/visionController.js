@@ -59,7 +59,7 @@ const fetchVisionProduct = async () => {
                     qty: 10,
                     weight: product.package?.weight_kg,
                     images: JSON.stringify([product.main_picture, ...product.additional_images?.slice(0, 6)]),
-                    standard_price: Number(product.retail_price) * 1.3,
+                    standard_price: Number(product.retail_price),
                     company_id: 119,
                     x_vision_id: product.product_id,
                     x_vision_model: product.model_code,
