@@ -67,7 +67,7 @@ const fetchVisionProduct = async () => {
                 };
 
                 const check = await searchProductVision(product.product_id, 119)
-                const checkImage = await axios.get(product.main_picture)
+                const checkImage = await axios.get(product.main_picture, { validateStatus: false })
                 console.log(checkImage.status);
                 if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length === 0) continue
 
@@ -90,8 +90,8 @@ const fetchVisionProduct = async () => {
 const runVisionDaily = () => {
     cron.schedule("0 13 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
-        fetchVisionProduct()
     })
+    fetchVisionProduct()
 }
 
 module.exports = runVisionDaily
