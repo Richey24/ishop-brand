@@ -59,7 +59,7 @@ const fetchVisionProduct = async () => {
                 qty: 10,
                 weight: product.package?.weight_kg,
                 images: JSON.stringify([product.main_picture, ...product.additional_images?.slice(0, 6)]),
-                standard_price: Number(product.retail_price),
+                standard_price: Number(product.retail_price.replace(/,/g, '')),
                 company_id: 119,
                 x_vision_id: product.product_id,
                 x_vision_model: product.model_code,
@@ -68,7 +68,7 @@ const fetchVisionProduct = async () => {
 
             const check = await searchProductVision(product.product_id, 119)
             const checkImage = await axios.get(product.main_picture, { validateStatus: false })
-
+            console.log(body);
             if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length === 0) continue
 
             if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length > 0) {
