@@ -96,8 +96,8 @@ const fetchVisionProduct = async () => {
 const runVisionDaily = () => {
     cron.schedule("0 13 * * *", () => {
         console.log(`running field product daily at ${new Date().toLocaleString()}`);
+        fetchVisionProduct()
     })
-    fetchVisionProduct()
 }
 
 module.exports = runVisionDaily
