@@ -22,7 +22,7 @@ const feedCategory = async (category, companyLongId) => {
 const fetchVisionProduct = async () => {
     const result = await axios.get("https://secure.chinavasion.com/api/getProductList.php", {
         data: {
-            key: "51yYB65DUPXJpYCdTVxuLJt750yK3oNX8AeRIwxRPgQ.",
+            key: "Zs6U7tiYqvCFL2BhcCPmNF6EvH4xphbLkPUB6lbs8i8.",
             categories: [
                 "US Local Warehouse",
             ]
@@ -33,7 +33,7 @@ const fetchVisionProduct = async () => {
     for (let i = 1; i <= Math.ceil(productLength / 50); i++) {
         const pro = await axios.get("https://secure.chinavasion.com/api/getProductList.php", {
             data: {
-                key: "51yYB65DUPXJpYCdTVxuLJt750yK3oNX8AeRIwxRPgQ.",
+                key: "Zs6U7tiYqvCFL2BhcCPmNF6EvH4xphbLkPUB6lbs8i8.",
                 categories: [
                     "US Local Warehouse",
                 ],
@@ -67,8 +67,15 @@ const fetchVisionProduct = async () => {
             };
 
             const check = await searchProductVision(product.product_id, 119)
+            if (check?.length > 1) {
+                const arr = check.shift()
+                check.forEach(async (che) => {
+                    await deleteProduct(che?.id)
+                    console.log("duplicate product deleted");
+                })
+                check.unshift(arr)
+            }
             const checkImage = await axios.get(product.main_picture, { validateStatus: false })
-            console.log(body);
             if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length === 0) continue
 
             if ((product.status === "Out of Stock" || checkImage.status !== 200) && check?.length > 0) {
