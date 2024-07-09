@@ -79,7 +79,7 @@ class PrintifyController {
                 })
                 const mainProducts = paginated.data
                 await Odoo.connect();
-                for (const product of mainProducts.data.slice(16)) {
+                for (const product of mainProducts.data) {
                     const variantObj = {}
                     product.variants.map((variant) => {
                         if (variant.is_available) {
