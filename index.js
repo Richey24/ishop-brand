@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { runFeedProductDaily } = require("./controllers/brandgatecontroller");
 const productsRoutes = require("./routes/ProductRoutes");
+const dropShipRoutes = require("./routes/dropShipRoutes");
 const { runPrintifyDaily } = require("./controllers/PrintifyController");
 const orderProduct = require("./controllers/orderProduct");
 const runAliExpressDaily = require("./controllers/aliexpress");
@@ -46,6 +47,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/printify", productsRoutes);
+app.use("/api/dropship", dropShipRoutes);
 app.post("/api/webhook", orderProduct)
 
 app.post("/api/noti", async (req, res) => {

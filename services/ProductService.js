@@ -333,6 +333,42 @@ const searchProductPrintify = async (id, company_id) => {
     return products;
 }
 
+const searchProductPrintful = async (id, company_id) => {
+
+    const products = await Odoo.execute_kw(
+        "product.template",
+        "search_read",
+        [[
+            ["x_printful_id", "ilike", id],
+            ["company_id", "ilike", company_id]
+        ]],
+        [
+            "id",
+            "name",
+        ],
+        {},
+    );
+    return products;
+}
+
+const searchProductGelato = async (id, company_id) => {
+
+    const products = await Odoo.execute_kw(
+        "product.template",
+        "search_read",
+        [[
+            ["x_gelato_id", "ilike", id],
+            ["company_id", "ilike", company_id]
+        ]],
+        [
+            "id",
+            "name",
+        ],
+        {},
+    );
+    return products;
+}
+
 const searchProducAli = async (id, company_id) => {
 
     const products = await Odoo.execute_kw(
@@ -379,5 +415,7 @@ module.exports = {
     searchProduct,
     searchProductPrintify,
     searchProducAli,
-    searchProductVision
+    searchProductVision,
+    searchProductPrintful,
+    searchProductGelato
 }
