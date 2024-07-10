@@ -39,7 +39,7 @@ const verifyKey = async (req, res) => {
                 },
                 validateStatus: false
             })
-            return res.status(responsePro.status).json({})
+            return res.status(responsePro.status).json({ message: responsePro.data.error ? responsePro.data.error : "Successful" })
         }
         if (dropshipType === "gelato") {
             const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${shopID}/products`, {
@@ -48,7 +48,7 @@ const verifyKey = async (req, res) => {
                 },
                 validateStatus: false
             })
-            return res.status(result.status).json({})
+            return res.status(result.status).json({ message: responsePro.data.message ? responsePro.data.message : "Successful" })
         }
         return res.status(400).json({ message: "send either printful or gelato as dropshipType" })
     } catch (error) {
