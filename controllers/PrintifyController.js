@@ -3,7 +3,7 @@ const { default: axios } = require('axios');
 const cron = require("node-cron");
 const PrintifyService = require('../services/PrintifyService');
 const Odoo = require("../odoo");
-const { searchProductPrintify, deleteProduct, getComapnyCategoriesByName, createCategory, updateProduct, getVariant, addProductVariant } = require('../services/ProductService');
+const { searchProductPrintify, deleteProduct, getComapnyCategoriesByName, createCategory, updateProduct, addProductVariant } = require('../services/ProductService');
 
 const feedCategory = async (category, companyLongId) => {
     let theCat;

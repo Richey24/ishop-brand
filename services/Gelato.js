@@ -34,24 +34,24 @@ const getGelatoVariants = async (variants, defaultPrice) => {
 }
 
 
-const feedGelato = async (company) => {
-    const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${company.gelatoStoreID}/products`, {
-        headers: {
-            "X-API-KEY": company.gelateApiKey
-        }
-    })
-    const products = result.data
+const feedGelato = async (shopID, apiKey, productIds) => {
+    // const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${company.gelatoStoreID}/products`, {
+    //     headers: {
+    //         "X-API-KEY": company.gelateApiKey
+    //     }
+    // })
+    // const products = result.data
     await Odoo.connect();
-    for (const product of products) {
-        const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${company.gelatoStoreID}/products/${product.id}`, {
+    for (const id of productIds) {
+        const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${shopID}/products/${id}`, {
             headers: {
-                "X-API-KEY": company.gelateApiKey
+                "X-API-KEY": apiKey
             }
         })
-        const images = result.data
+        const product = result.data
         const priceResult = await axios.get(`https://product.gelatoapis.com/v3/products/${product.variants[0]?.productUid}/prices`, {
             headers: {
-                "X-API-KEY": company.gelateApiKey
+                "X-API-KEY": apiKey
             }
         })
         const price = priceResult.data
