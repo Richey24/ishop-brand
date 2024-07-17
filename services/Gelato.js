@@ -34,7 +34,7 @@ const getGelatoVariants = async (variants, defaultPrice) => {
 }
 
 
-const feedGelato = async (shopID, apiKey, productIds) => {
+const feedGelato = async (companyShortId, companyLongId, shopID, apiKey, productIds) => {
     // const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${company.gelatoStoreID}/products`, {
     //     headers: {
     //         "X-API-KEY": company.gelateApiKey
@@ -61,7 +61,7 @@ const feedGelato = async (shopID, apiKey, productIds) => {
             variantObj[variant.title] = variant.productUid
         })
 
-        const category = await feedGelatoCategory(product.category, company._id)
+        const category = await feedGelatoCategory(product.category, companyLongId)
         const variants = await getGelatoVariants(product.variants, price)
 
         const body = {
@@ -75,10 +75,10 @@ const feedGelato = async (shopID, apiKey, productIds) => {
             weight: 1,
             images: JSON.stringify(images.productImages?.map((image) => image.fileUrl)),
             standard_price: price.toFixed(2),
-            company_id: company.company_id,
+            company_id: companyLongId,
             x_gelato_id: product.id,
             x_gelato_variant_id: product.variants[0]?.productUid,
-            x_gelato_shop_id: company.gelatoStoreID
+            x_gelato_shop_id: shopID
         };
 
         if (Object.keys(variantObj).length > 0) {

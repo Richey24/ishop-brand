@@ -357,13 +357,13 @@ const searchProductVision = async (id, company_id) => {
     return products;
 }
 
-const getPrintfulProductsIDs = async (shopID) => {
+const getProductsIDs = async (val, returnVal, shopID) => {
     await Odoo.connect();
 
     const productData = await Odoo.execute_kw("product.template", "search_read", [
-        [["x_printful_shop_id", "=", shopID]],
+        [[val, "=", shopID]],
         [
-            "x_printful_id",
+            returnVal,
         ],
     ]);
     return productData.map((product) => product.x_printful_id)
@@ -382,5 +382,5 @@ module.exports = {
     searchProductVision,
     searchProductPrintful,
     searchProductGelato,
-    getPrintfulProductsIDs
+    getProductsIDs
 }

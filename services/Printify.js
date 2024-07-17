@@ -35,7 +35,7 @@ const getVariants = async (variants) => {
 }
 
 
-const feedPrintify = async (shopID, apiKey, productIds) => {
+const feedPrintify = async (companyShortId, companyLongId, shopID, apiKey, productIds) => {
     await Odoo.connect();
     for (const id of productIds) {
         const response = await axios.get(`https://api.printify.com/v1/shops/${shopID}/products/${id}.json`, {
@@ -69,7 +69,7 @@ const feedPrintify = async (shopID, apiKey, productIds) => {
             company_id: companyShortId,
             x_printify_id: product.id,
             x_printify_variant_id: product.variants[0]?.id,
-            x_printify_shop_id: product.shop_id.toString()
+            x_printify_shop_id: shopID
         };
 
         if (Object.keys(variantObj).length > 0) {

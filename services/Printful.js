@@ -30,7 +30,7 @@ const getPrintfulVariants = async (variants) => {
     return [res.filter((el) => el !== undefined)]
 }
 
-const feedPrintful = async (shopID, apiKey, productIds) => {
+const feedPrintful = async (companyShortId, companyLongId, shopID, apiKey, productIds) => {
     // const responsePro = await axios.get(`https://api.printful.com/store/products`, {
     //     headers: {
     //         Authorization: `Bearer ${company.printfulToken}`,
@@ -61,7 +61,7 @@ const feedPrintful = async (shopID, apiKey, productIds) => {
                 variantObj[`${variant.size}/${variant.color}`] = variant.variant_id
             }
         })
-        const category = await feedPrintfulCategory(productDetail.sync_variants[0].main_category_id, company._id)
+        const category = await feedPrintfulCategory(productDetail.sync_variants[0].main_category_id, companyLongId)
         const variants = await getPrintfulVariants(productDetail.sync_variants)
 
         const body = {
@@ -75,10 +75,10 @@ const feedPrintful = async (shopID, apiKey, productIds) => {
             weight: 1,
             images: JSON.stringify(productDetail.sync_variants[0]?.files.map((image) => image.preview_url)),
             standard_price: productDetail.sync_variants[0]?.retail_price.toFixed(2),
-            company_id: company.company_id,
+            company_id: companyLongId,
             x_printful_id: productDetail.sync_product.id,
             x_printful_variant_id: productDetail.sync_variants[0]?.variant_id,
-            x_printful_shop_id: company.printfulStoreID
+            x_printful_shop_id: shopID
         };
 
         if (Object.keys(variantObj).length > 0) {

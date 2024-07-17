@@ -1,6 +1,6 @@
 const express = require("express");
 require("dotenv").config();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6000;
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,7 +10,6 @@ const dropShipRoutes = require("./routes/dropShipRoutes");
 const { runPrintifyDaily } = require("./controllers/PrintifyController");
 const orderProduct = require("./controllers/orderProduct");
 const runAliExpressDaily = require("./controllers/aliexpress");
-const Noti = require("./model/noti");
 const runVisionDaily = require("./controllers/visionController");
 const app = express();
 
@@ -49,41 +48,6 @@ app.get("/", (req, res) => {
 app.use("/api/printify", productsRoutes);
 app.use("/api/dropship", dropShipRoutes);
 app.post("/api/webhook", orderProduct)
-
-app.post("/api/noti", async (req, res) => {
-    try {
-        const body = req.body
-        if (!body) {
-            return res.status(400).json({ message: "send endpoint object" })
-        }
-        await Noti.create(body)
-        res.status(200).json({ message: "created" })
-    } catch (error) {
-        res.status(500).json({ message: "error occured" })
-    }
-})
-
-app.post("/api/noti/:id", async (req, res) => {
-    try {
-        const id = req.params.id
-        if (!id) {
-            return res.status(400).json({ message: "send endpoint object" })
-        }
-        await Noti.findByIdAndDelete(id)
-        res.status(200).json({ message: "deleted" })
-    } catch (error) {
-        res.status(500).json({ message: "error occured" })
-    }
-})
-
-app.get("/api/noti", async (req, res) => {
-    try {
-        const noti = await Noti.find({})
-        res.status(200).json(noti)
-    } catch (error) {
-        res.status(500).json({ message: "error occured" })
-    }
-})
 
 app.listen(PORT, () => {
     console.log(`App is running on ${PORT}`);
