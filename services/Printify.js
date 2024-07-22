@@ -76,6 +76,7 @@ const feedPrintify = async (companyShortId, companyLongId, shopID, apiKey, produ
             body.x_printify_variant_id = JSON.stringify(variantObj)
             body.variants = variants
         }
+        console.log(body);
 
         const check = await searchProductPrintify(product.id, companyShortId)
         if (check?.length > 1) {
@@ -86,17 +87,11 @@ const feedPrintify = async (companyShortId, companyLongId, shopID, apiKey, produ
             })
             check.unshift(arr)
         }
-
-        if (product.variants[0].is_available === false && check?.length > 0) {
-            await deleteProduct(check[0]?.id)
-            console.log("product deleted");
+        if (check?.length === 0 && body.variants.length !== 0) {
+            const res = await addProductVariant({ product: body })
+            console.log("created-->", res, companyShortId)
         } else {
-            if (check?.length === 0 && body.variants.length !== 0) {
-                const res = await addProductVariant({ product: body })
-                console.log("created-->", res, companyShortId)
-            } else {
-                await updateProduct({ product: body, productId: check[0]?.id })
-            }
+            await updateProduct({ product: body, productId: check[0]?.id })
         }
     }
 }

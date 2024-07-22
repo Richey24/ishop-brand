@@ -5,11 +5,11 @@ const { getComapnyCategoriesByName, createCategory, searchProductPrintful, delet
 const feedPrintfulCategory = async (category, companyLongId) => {
     const responseCat = await axios.get(`https://api.printful.com/categories/${category}`)
     let theCat;
-    const checkCat = await getComapnyCategoriesByName(responseCat.data, companyLongId)
+    const checkCat = await getComapnyCategoriesByName(responseCat.data?.result?.category?.title, companyLongId)
     if (checkCat) {
         theCat = checkCat.id
     } else {
-        const getCatID = await createCategory(responseCat.data, companyLongId)
+        const getCatID = await createCategory(responseCat.data?.result?.category?.title, companyLongId)
         console.log("created category", getCatID);
         theCat = getCatID
     }
@@ -31,21 +31,6 @@ const getPrintfulVariants = async (variants) => {
 }
 
 const feedPrintful = async (companyShortId, companyLongId, shopID, apiKey, productIds) => {
-    // const responsePro = await axios.get(`https://api.printful.com/store/products`, {
-    //     headers: {
-    //         Authorization: `Bearer ${company.printfulToken}`,
-    //         "X-PF-Store-Id": company.printfulStoreID
-    //     }
-    // })
-    // const products = responsePro.data
-    // for (let i = 1; i <= Math.ceil(products.paging.total / 100); i++) {
-    //     const paginated = await axios.get(`https://api.printful.com/store/products?limit=100&offset=${i}`, {
-    //         headers: {
-    //             Authorization: `Bearer ${company.printfulToken}`,
-    //             "X-PF-Store-Id": company.printfulStoreID
-    //         }
-    //     })
-    //     const mainProducts = paginated.data
     await Odoo.connect();
     for (const id of productIds) {
         const result = await axios.get(`https://api.printful.com/store/products/${id}`, {
@@ -54,7 +39,7 @@ const feedPrintful = async (companyShortId, companyLongId, shopID, apiKey, produ
                 "X-PF-Store-Id": shopID
             }
         })
-        const productDetail = result.data
+        const productDetail = result.data.result
         const variantObj = {}
         productDetail.sync_variants.map((variant) => {
             if (variant.availability_status === "active") {
@@ -69,13 +54,13 @@ const feedPrintful = async (companyShortId, companyLongId, shopID, apiKey, produ
             category_id: category.toString(),
             uom_name: "1",
             published: "true",
-            list_price: productDetail.sync_variants[0]?.retail_price.toFixed(2),
+            list_price: Number(productDetail.sync_variants[0]?.retail_price).toFixed(2),
             description: "",
             qty: 10,
             weight: 1,
             images: JSON.stringify(productDetail.sync_variants[0]?.files.map((image) => image.preview_url)),
-            standard_price: productDetail.sync_variants[0]?.retail_price.toFixed(2),
-            company_id: companyLongId,
+            standard_price: Number(productDetail.sync_variants[0]?.retail_price).toFixed(2),
+            company_id: companyShortId,
             x_printful_id: productDetail.sync_product.id,
             x_printful_variant_id: productDetail.sync_variants[0]?.variant_id,
             x_printful_shop_id: shopID
@@ -85,8 +70,8 @@ const feedPrintful = async (companyShortId, companyLongId, shopID, apiKey, produ
             body.x_printful_variant_id = JSON.stringify(variantObj)
             body.variants = variants
         }
-        // console.log(body);
-        const check = await searchProductPrintful(product.id, company.company_id)
+        console.log(body);
+        const check = await searchProductPrintful(body.x_printful_id, companyShortId)
         if (check?.length > 1) {
             const arr = check.shift()
             check.forEach(async (che) => {
@@ -95,19 +80,13 @@ const feedPrintful = async (companyShortId, companyLongId, shopID, apiKey, produ
             })
             check.unshift(arr)
         }
-        if (product.sync_variants[0].availability_status === "active" && check?.length > 0) {
-            await deleteProduct(check[0]?.id)
-            console.log("product deleted");
+        if (check?.length === 0 && body.variants.length !== 0) {
+            const res = await addProductVariant({ product: body })
+            console.log("created-->", res, companyShortId)
         } else {
-            if (check?.length === 0 && body.variants.length !== 0) {
-                const res = await addProductVariant({ product: body })
-                console.log("created-->", res, company.company_id)
-            } else {
-                await updateProduct({ product: body, productId: check[0]?.id })
-            }
+            await updateProduct({ product: body, productId: check[0]?.id })
         }
     }
-    // }
 }
 
 module.exports = feedPrintful
