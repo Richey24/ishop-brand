@@ -97,7 +97,7 @@ const getDropshipProducts = async (req, res) => {
                     price: productDetail.sync_variants[0]?.retail_price,
                     images: product.thumbnail_url,
                     shopID: shopID,
-                    imported: productIds?.includes(product.id)
+                    imported: productIds?.includes(product.id?.toString())
                 })
             }
             res.status(200).json({ products: theProducts, total: mainProducts.paging?.total })
@@ -149,7 +149,7 @@ const getDropshipProducts = async (req, res) => {
                 price: (product.variants[0]?.price / 100).toFixed(2),
                 images: product.images[0].src,
                 shopID: shopID,
-                imported: productIds?.includes(product.id)
+                imported: productIds?.includes(product.id.toString())
             }))
             res.status(200).json({ products: theProducts, total: products.total })
         }

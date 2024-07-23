@@ -49,8 +49,10 @@ const addProductVariant = async (params) => {
         x_vision_model: params?.product.x_vision_model,
         x_printful_id: params?.product.x_printful_id,
         x_printful_variant_id: params?.product.x_printful_variant_id,
+        x_printful_shop_id: params.product?.x_printful_shop_id,
         x_gelato_id: params?.product.x_gelato_id,
         x_gelato_variant_id: params?.product.x_gelato_variant_id,
+        x_gelato_shop_id: params.product?.x_gelato_shop_id,
         product_tag_ids: params.product.product_tag_ids
             ? JSON.parse(params.product.product_tag_ids)
             : [],
@@ -61,66 +63,6 @@ const addProductVariant = async (params) => {
     };
 
     const templateId = await createProductTemplate(templateData);
-
-    // if (params?.product?.variants && params?.product?.variants.length > 0) {
-    //     for (const container of params?.product?.variants) {
-    //         console.log(container);
-    //         if (container) {
-    //             for (const variant of container) {
-
-    //                 let attributeValueId;
-
-    //                 if (!variant?.valueId) {
-    //                     const attributeValueData = {
-    //                         name: variant?.value, // Replace with the actual value
-    //                         attribute_id: variant?.attributeId,
-    //                         sequence: 1, // Optional: Display sequence
-    //                     };
-    //                     attributeValueId = await Odoo.execute_kw(
-    //                         "product.attribute.value",
-    //                         "create",
-    //                         [attributeValueData],
-    //                     );
-    //                 } else {
-    //                     attributeValueId = variant?.valueId;
-    //                 }
-    //                 // console.log(attributeValueId);
-    //                 const attributeLineData = {
-    //                     product_tmpl_id: templateId,
-    //                     attribute_id: variant?.attributeId,
-    //                     value_ids: [[6, 0, [attributeValueId]]],
-    //                 };
-
-    //                 const attributeLineId = await Odoo.execute_kw(
-    //                     "product.template.attribute.line",
-    //                     "create",
-    //                     [attributeLineData],
-    //                 );
-
-    //                 if (variant?.price_extra && variant?.price_extra !== 0) {
-    //                     ///ADD PRICE_EXTRA
-    //                     const attributeLineRespData = await Odoo.execute_kw(
-    //                         "product.template.attribute.line",
-    //                         "read",
-    //                         [[attributeLineId], ["product_template_value_ids"]],
-    //                     );
-
-    //                     const productTemplateValueIds =
-    //                         attributeLineRespData[0]?.product_template_value_ids || [];
-    //                     const attributeValueWriteData = {
-    //                         price_extra: variant?.price_extra, // Set the price adjustment here
-    //                     };
-
-    //                     await Odoo.execute_kw(
-    //                         "product.template.attribute.value",
-    //                         "write",
-    //                         [[productTemplateValueIds[0]], attributeValueWriteData],
-    //                     );
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     return templateId;
 };
@@ -166,8 +108,10 @@ const updateProduct = async (params) => {
             x_vision_model: params?.product.x_vision_model,
             x_printful_id: params?.product.x_printful_id,
             x_printful_variant_id: params?.product.x_printful_variant_id,
+            x_printful_shop_id: params.product?.x_printful_shop_id,
             x_gelato_id: params?.product.x_gelato_id,
             x_gelato_variant_id: params?.product.x_gelato_variant_id,
+            x_gelato_shop_id: params.product?.x_gelato_shop_id,
             x_variants:
                 params?.product?.variants && params?.product?.variants.length > 0
                     ? JSON.stringify(params?.product?.variants)
@@ -275,7 +219,6 @@ const searchProductPrintify = async (id, company_id) => {
         "search_read",
         [[
             ["x_printify_id", "ilike", id],
-            ["company_id", "ilike", company_id]
         ]],
         [
             "id",
@@ -287,13 +230,11 @@ const searchProductPrintify = async (id, company_id) => {
 }
 
 const searchProductPrintful = async (id, company_id) => {
-
     const products = await Odoo.execute_kw(
         "product.template",
         "search_read",
         [[
             ["x_printful_id", "ilike", id],
-            ["company_id", "ilike", company_id]
         ]],
         [
             "id",
@@ -311,7 +252,6 @@ const searchProductGelato = async (id, company_id) => {
         "search_read",
         [[
             ["x_gelato_id", "ilike", id],
-            ["company_id", "ilike", company_id]
         ]],
         [
             "id",
@@ -329,7 +269,6 @@ const searchProducAli = async (id, company_id) => {
         "search_read",
         [[
             ["x_aliexpress_id", "ilike", id],
-            ["company_id", "ilike", company_id]
         ]],
         [
             "id",
@@ -346,7 +285,6 @@ const searchProductVision = async (id, company_id) => {
         "search_read",
         [[
             ["x_vision_id", "ilike", id],
-            ["company_id", "ilike", company_id]
         ]],
         [
             "id",
@@ -364,6 +302,7 @@ const getProductsIDs = async (val, returnVal, shopID) => {
         [[val, "=", shopID]],
         [
             returnVal,
+            "x_printful_shop_id"
         ],
     ]);
     return productData.map((product) => product.x_printful_id)
