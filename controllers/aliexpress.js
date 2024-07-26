@@ -140,7 +140,7 @@ const fetchALiExpressProducts = async () => {
                     await deleteProduct(check[0]?.id)
                     console.log("product deleted");
                 } else {
-                    if (check?.length === 0 && body.variants.length !== 0) {
+                    if (check?.length === 0 && body.variants?.length !== 0) {
                         const res = await addProductVariant({ product: body })
                         console.log("created-->", res)
                     } else {
