@@ -269,6 +269,7 @@ const searchProducAli = async (id, company_id) => {
         "search_read",
         [[
             ["x_aliexpress_id", "ilike", id],
+            ["company_id", "=", [+company_id]]
         ]],
         [
             "id",
