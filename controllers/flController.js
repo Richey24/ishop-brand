@@ -54,7 +54,7 @@ const fetchFlProducts = async () => {
     const aliproducts = await axios.get(`https://api-sg.aliexpress.com/sync?target_currency=USD&page_no=1&feed_name=DS_Germany_fastdelivery+20231123&method=aliexpress.ds.recommend.feed.get&app_key=507142&sign_method=sha256&timestamp=${timestamp}&sign=${hash}`)
     const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
     await Odoo.connect();
-    for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
+    for (let i = 8; i < Math.ceil(totalCount / 60); i++) {
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
