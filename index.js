@@ -12,6 +12,7 @@ const orderProduct = require("./controllers/orderProduct");
 const runAliExpressDaily = require("./controllers/aliexpress");
 const runVisionDaily = require("./controllers/visionController");
 const runSdDaily = require("./controllers/sdController");
+const runFlDaily = require("./controllers/flController");
 const app = express();
 
 app.use(cors());
@@ -41,6 +42,7 @@ mongoose
 // runAliExpressDaily()
 // runVisionDaily()
 runSdDaily()
+// runFlDaily()
 
 app.get("/", (req, res) => {
     console.log("Hello MEVN Soldier");
