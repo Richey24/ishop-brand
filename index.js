@@ -36,10 +36,10 @@ mongoose
         console.log({ database_error: err });
     });
 
-runFeedProductDaily()
-runPrintifyDaily()
-runAliExpressDaily()
-runVisionDaily()
+// runFeedProductDaily()
+// runPrintifyDaily()
+// runAliExpressDaily()
+// runVisionDaily()
 runSdDaily()
 
 app.get("/", (req, res) => {
