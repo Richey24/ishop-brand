@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchFlProducts = async () => {
     try {
-        const feed = "DS_France_fastdelivery 20231123"
-        const path = "DS_France_fastdelivery 20231123"
+        const feed = "AEB_UK Local Items"
+        const path = "AEB_UK Local Items"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
