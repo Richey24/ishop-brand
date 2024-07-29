@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchFlProducts = async () => {
     try {
-        const feed = "Business Winning Products with Exclusive Price"
-        const path = "Business Winning Products with Exclusive Price"
+        const feed = "DS_Australia_fastdelivery 20231123"
+        const path = "DS_Australia_fastdelivery 20231123"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
