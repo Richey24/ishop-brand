@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchFlProducts = async () => {
     try {
-        const feed = "DS_Australia_fastdelivery 20231123"
-        const path = "DS_Australia_fastdelivery 20231123"
+        const feed = "SA_Clothing&Shoes"
+        const path = "SA_Clothing%26Shoes"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,

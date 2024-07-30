@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchSdProducts = async () => {
     try {
-        const feed = "DS_Poland_fastdelivery 20231123"
-        const path = "DS_Poland_fastdelivery 20231123"
+        const feed = "NG topseller 7.17"
+        const path = "NG topseller 7.17"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
