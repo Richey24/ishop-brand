@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchSdProducts = async () => {
     try {
-        const feed = "NG topseller 7.17"
-        const path = "NG topseller 7.17"
+        const feed = "US 3PL-Warehouse 20240202"
+        const path = "US 3PL-Warehouse 20240202"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
@@ -58,7 +58,7 @@ const fetchSdProducts = async () => {
         const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
         console.log(totalCount);
         await Odoo.connect();
-        for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
+        for (let i = 15; i < Math.ceil(totalCount / 60); i++) {
             try {
                 const timestamp = Date.now()
                 const hash = signApiRequest({
