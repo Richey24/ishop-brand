@@ -28,19 +28,18 @@ const dropshipController = async (req, res) => {
 
 const verifyKey = async (req, res) => {
     try {
-        const { shopID, apiKey, dropshipType } = req.body
-        if (!shopID || !apiKey || !dropshipType) {
+        const { apiKey, dropshipType } = req.body
+        if (!apiKey || !dropshipType) {
             return res.status(400).json({ message: "Send shopID, apiKey, dropshipType" })
         }
         if (dropshipType === "printful") {
-            const responsePro = await axios.get(`https://api.printful.com/store/products`, {
+            const responsePro = await axios.get(`https://api.printful.com/stores`, {
                 headers: {
                     Authorization: `Bearer ${apiKey}`,
-                    "X-PF-Store-Id": shopID
                 },
                 validateStatus: false
             })
-            return res.status(responsePro.status).json({ message: responsePro.data.error ? responsePro.data.error : "Successful" })
+            return res.status(responsePro.status).json({ message: responsePro.data.error ? responsePro.data.error : responsePro.data.result })
         }
         if (dropshipType === "gelato") {
             const result = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${shopID}/products`, {
@@ -52,13 +51,13 @@ const verifyKey = async (req, res) => {
             return res.status(result.status).json({ message: responsePro.data.message ? responsePro.data.message : "Successful" })
         }
         if (dropshipType === "printify") {
-            const response = await axios.get(`https://api.printify.com/v1/shops/${shopID}/products.json?limit=2`, {
+            const response = await axios.get(`https://api.printify.com/v1/shops.json`, {
                 headers: {
                     Authorization: `Bearer ${apiKey}`
                 },
                 validateStatus: false
             })
-            return res.status(response.status).json({ message: response.status === 200 ? "Successful" : response.data.error })
+            return res.status(response.status).json({ message: response.status === 200 ? response.data : response.data.error })
         }
         return res.status(400).json({ message: "send either printful or gelato or printify as dropshipType" })
     } catch (error) {
