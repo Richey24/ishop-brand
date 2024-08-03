@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchSdProducts = async () => {
     try {
-        const feed = "AEB_SA_Bag&Shoe&Accessories&Clothing&LightweightMachine_5~50USD"
-        const path = "AEB_SA_Bag%26Shoe%26Accessories%26Clothing%26LightweightMachine_5%7E50USD"
+        const feed = "AEB_US_Local Items_Home&Furniture&Outdoor&Sport&Beauty"
+        const path = "AEB_US_Local+Items_Home%26Furniture%26Outdoor%26Sport%26Beauty"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
