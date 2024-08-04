@@ -58,7 +58,7 @@ const fetchFlProducts = async () => {
         const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
         console.log(totalCount);
         await Odoo.connect();
-        for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
+        for (let i = 37; i < Math.ceil(totalCount / 60); i++) {
             console.log(i);
             try {
                 const timestamp = Date.now()
