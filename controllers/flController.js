@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchFlProducts = async () => {
     try {
-        const feed = "AEB_SA_Bag&Shoe&Accessories&Clothing&LightweightMachine_5~50USD"
-        const path = "AEB_SA_Bag%26Shoe%26Accessories%26Clothing%26LightweightMachine_5%7E50USD"
+        const feed = "DS_ SaudiArabia_Clothing&BeautyMachines_100$-"
+        const path = "DS_+SaudiArabia_Clothing%26BeautyMachines_100%24-"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
@@ -56,10 +56,10 @@ const fetchFlProducts = async () => {
 
         const aliproducts = await axios.get(`https://api-sg.aliexpress.com/sync?target_currency=USD&page_no=1&feed_name=${path}&method=aliexpress.ds.recommend.feed.get&app_key=507142&sign_method=sha256&timestamp=${timestamp}&sign=${hash}`)
         const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
-        console.log(totalCount);
+        console.log(totalCount, "fb");
         await Odoo.connect();
         for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
-            console.log(i);
+            console.log(i, "fb");
             try {
                 const timestamp = Date.now()
                 const hash = signApiRequest({
@@ -99,7 +99,7 @@ const fetchFlProducts = async () => {
                                 variantObj[`${title}`] = variant.sku_attr
                             }
                         })
-                        const category = await feedCategory(product.second_level_category_name, "66953897f002d70cf76d8886")
+                        const category = await feedCategory(product.second_level_category_name, "66a3fc9139ea06b6c60dec93")
                         const variants = await getVariants(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o)
 
                         const body = {
@@ -113,7 +113,7 @@ const fetchFlProducts = async () => {
                             weight: productDetails.package_info_dto.gross_weight,
                             images: JSON.stringify(product.product_small_image_urls.productSmallImageUrl),
                             standard_price: ((Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4) + (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4) * 1.5).toFixed(2),
-                            company_id: 135,
+                            company_id: 143,
                             x_aliexpress_id: product.product_id,
                             x_free_shipping: true,
                             discount: {
@@ -130,7 +130,7 @@ const fetchFlProducts = async () => {
                             body.variants = variants
                         }
 
-                        const check = await searchProducAli(product.product_id, 135)
+                        const check = await searchProducAli(product.product_id, 143)
                         if (check?.length > 1) {
                             const arr = check.shift()
                             check.forEach(async (che) => {

@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchSdProducts = async () => {
     try {
-        const feed = "AEB_US_Local Items_Home&Furniture&Outdoor&Sport&Beauty"
-        const path = "AEB_US_Local+Items_Home%26Furniture%26Outdoor%26Sport%26Beauty"
+        const feed = "DS_Italy_fastdelivery 20231123"
+        const path = "DS_Italy_fastdelivery 20231123"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
@@ -56,10 +56,10 @@ const fetchSdProducts = async () => {
 
         const aliproducts = await axios.get(`https://api-sg.aliexpress.com/sync?target_currency=USD&page_no=1&feed_name=${path}&method=aliexpress.ds.recommend.feed.get&app_key=507142&sign_method=sha256&timestamp=${timestamp}&sign=${hash}`)
         const totalCount = aliproducts.data.aliexpress_ds_recommend_feed_get_response.result.total_record_count
-        console.log(totalCount);
+        console.log(totalCount, "il");
         await Odoo.connect();
         for (let i = 1; i < Math.ceil(totalCount / 60); i++) {
-            console.log(i);
+            console.log(i, "il");
             try {
                 const timestamp = Date.now()
                 const hash = signApiRequest({
@@ -98,7 +98,7 @@ const fetchSdProducts = async () => {
                                 variantObj[`${title}`] = variant.sku_attr
                             }
                         })
-                        const category = await feedCategory(product.second_level_category_name, "6695440ef002d70cf76d8b61")
+                        const category = await feedCategory(product.second_level_category_name, "66a3fb66a385045639556cbd")
                         const variants = await getVariants(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o)
 
                         const body = {
@@ -112,7 +112,7 @@ const fetchSdProducts = async () => {
                             weight: productDetails.package_info_dto.gross_weight,
                             images: JSON.stringify(product.product_small_image_urls.productSmallImageUrl),
                             standard_price: ((Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4) + (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4) * 1.5).toFixed(2),
-                            company_id: 136,
+                            company_id: 142,
                             x_aliexpress_id: product.product_id,
                             x_free_shipping: true,
                             discount: {
@@ -129,7 +129,7 @@ const fetchSdProducts = async () => {
                             body.variants = variants
                         }
 
-                        const check = await searchProducAli(product.product_id, 136)
+                        const check = await searchProducAli(product.product_id, 142)
                         if (check?.length > 1) {
                             const arr = check.shift()
                             check.forEach(async (che) => {
