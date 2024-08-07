@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchSdProducts = async () => {
     try {
-        const feed = "AEB_UK_SelectedItems"
-        const path = "AEB_UK_SelectedItems"
+        const feed = "DS_ConsumerElectronics_bestsellers"
+        const path = "DS_ConsumerElectronics_bestsellers"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
