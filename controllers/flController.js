@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchFlProducts = async () => {
     try {
-        const feed = "AEB_UK Local Items"
-        const path = "AEB_UK Local Items"
+        const feed = "DS_DentalEquipment&Supplies"
+        const path = "DS_DentalEquipment%26Supplies"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
