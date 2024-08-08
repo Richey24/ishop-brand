@@ -28,7 +28,7 @@ const dropshipController = async (req, res) => {
 
 const verifyKey = async (req, res) => {
     try {
-        const { apiKey, dropshipType } = req.body
+        const { apiKey, dropshipType, shopID } = req.body
         if (!apiKey || !dropshipType) {
             return res.status(400).json({ message: "Send shopID, apiKey, dropshipType" })
         }
@@ -48,7 +48,7 @@ const verifyKey = async (req, res) => {
                 },
                 validateStatus: false
             })
-            return res.status(result.status).json({ message: responsePro.data.message ? responsePro.data.message : "Successful" })
+            return res.status(result.status).json({ message: result.status !== 200 ? "Invalid Api Key Or Shop ID" : "Successful" })
         }
         if (dropshipType === "printify") {
             const response = await axios.get(`https://api.printify.com/v1/shops.json`, {
