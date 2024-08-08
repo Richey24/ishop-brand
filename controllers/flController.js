@@ -41,8 +41,8 @@ const getVariants = async (variants) => {
 
 const fetchFlProducts = async () => {
     try {
-        const feed = "DS_DentalEquipment&Supplies"
-        const path = "DS_DentalEquipment%26Supplies"
+        const feed = "phones&accessories_ZA topsellers_ 20240423"
+        const path = "phones%26accessories_ZA topsellers_ 20240423"
         const timestamp = Date.now()
         const hash = signApiRequest({
             app_key: 507142,
