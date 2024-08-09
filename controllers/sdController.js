@@ -111,16 +111,16 @@ const fetchSdProducts = async () => {
                             qty: product.lastest_volume,
                             weight: productDetails.package_info_dto.gross_weight,
                             images: JSON.stringify(product.product_small_image_urls.productSmallImageUrl),
-                            standard_price: ((Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4) + (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4) * 1.5).toFixed(2),
-                            company_id: 142,
+                            standard_price: ((Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.3) * 2).toFixed(2),
+                            company_id: 135,
                             x_aliexpress_id: product.product_id,
                             x_free_shipping: true,
                             discount: {
-                                amount: (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4).toFixed(2),
+                                amount: (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.3).toFixed(2),
                                 type: "fixed",
                                 start_date: new Date().toISOString(),
                                 end_date: new Date(new Date().setMonth(new Date().getMonth() + 24)).toISOString(),
-                                discountedAmount: (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.4).toFixed(2),
+                                discountedAmount: (Number(productDetails.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o[0].sku_price) * 1.3).toFixed(2),
                             },
                         };
 
