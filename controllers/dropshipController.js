@@ -101,7 +101,7 @@ const getDropshipProducts = async (req, res) => {
             }
             res.status(200).json({ products: theProducts, total: mainProducts.paging?.total })
         } else if (dropshipType === "gelato") {
-            const response = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${shopID}/products?offset=${offset}&limit=10`, {
+            const response = await axios.get(`https://ecommerce.gelatoapis.com/v1/stores/${shopID}/products?offset=${offset - 1}&limit=10`, {
                 headers: {
                     "X-API-KEY": apiKey
                 }
